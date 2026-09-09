@@ -18,7 +18,7 @@ Import the locally built `.pbiviz` into an authorized Power BI Desktop report, s
 
 Use single-level categories: no hierarchy drilldown or totals are displayed. The visual preserves delivered model order, formats, and node identities. Display labels and tooltip text are capped at 1,024 characters, including a trailing `...` when shortened; original selection identities are unchanged. Set model **Sort by column** for business ordering; the visual does not alphabetize or reconstruct categories.
 
-When supplied by the host, per-cell `general.formatString` overrides format raw cells, accessible values, and raw tooltip values. Otherwise the source-measure format applies. Legends use measure metadata rather than an individual cell's format override.
+When supplied by the host, per-cell `general.formatString` overrides format raw cells, accessible values, denominators, and each tooltip measure independently. Otherwise the source-measure format applies. Legends use measure metadata rather than an individual cell's format override.
 
 ### Color is separate from calculation
 
@@ -59,15 +59,15 @@ Below 180 × 120 pixels, enlarge the visual; very large fonts can require more s
 - Product × region revenue, including zero, BLANK, and an absent intersection.
 - Defect × production line counts with explicit inspection-opportunity denominators.
 
-No PBIX or validated PBIP is supplied. These are practical source recipes to assemble and validate in Desktop, not a claim that a generated report project works. The visual itself makes no runtime network calls and uses no runtime external assets.
+`npm run sample` prepares the authored, bound offline PBIP described in [samples/PBIP.md](samples/PBIP.md), embedding the exact built visual. Native Desktop opening/refresh and conversion to the required real PBIX remain coordinator-owned gates. No fabricated PBIX is supplied. The visual itself makes no runtime network calls and uses no runtime external assets.
 
 ## Development and verification
 
 | Item | Fixed v1 metadata |
 | --- | --- |
 | Visual GUID | `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37` |
-| `.pbiviz` version | `1.0.0.0` |
-| Private npm package | `@atlyn/heatmap` `1.0.0` |
+| `.pbiviz` version | `1.0.1.0` |
+| Private npm package | `@atlyn/heatmap` `1.0.1` |
 | Power BI host API contract (`apiVersion`) | `5.11.0` |
 | `powerbi-visuals-api` SDK npm package | `5.11.1` |
 | Power BI visuals tools | `7.2.1` |
@@ -81,6 +81,7 @@ After obtaining this private source through an authorized channel, use Node.js 2
 | `npm start` | Local visual development server |
 | `npm run typecheck` | TypeScript validation |
 | `npm run lint` | Source linting |
+| `npm run eslint` | Certification-required ESLint entry point |
 | `npm test` | Automated unit/host-mock tests |
 | `npm run build` | Package through the Node wrapper and official SDK |
 | `npm run package` | Create `.pbiviz` through the same wrapper |
@@ -90,6 +91,9 @@ After obtaining this private source through an authorized channel, use Node.js 2
 | `npm run resources` | Generate English SDK resources from canonical strings |
 | `npm run notices` | Generate `THIRD_PARTY_NOTICES.md` and bundled offline legal text |
 | `npm run validate` | Run the configured validation chain |
+| `npm run sample` | Generate bound offline PBIP from the exact current package |
+
+**Local validation only.** GitHub Actions is disabled and this repository has no workflows. Do not enable Actions, dispatch hosted jobs, or treat historical CI as current release proof. Source hosting, pushes, and pull requests remain allowed. See [quality evidence](docs/VALIDATION.md) and the [evidence-based comparison](docs/COMPARISON.md).
 
 Run dependency auditing and notice generation explicitly when preparing evidence; do not assume `validate` covers every release gate. Consult [VALIDATION.md](docs/VALIDATION.md) for recorded results, not an implied pass from this command list.
 

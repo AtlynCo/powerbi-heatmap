@@ -11,7 +11,8 @@ let js: string;
 let css: string;
 
 test.beforeAll(async () => {
-    const zip = await JSZip.loadAsync(readFileSync(join("dist", `${guid}.1.0.0.0.pbiviz`)));
+    const version = JSON.parse(readFileSync("pbiviz.json", "utf8")).visual.version;
+    const zip = await JSZip.loadAsync(readFileSync(join("dist", `${guid}.${version}.pbiviz`)));
     const file = Object.values(zip.files).find(entry => entry.name.startsWith("resources/") && entry.name.endsWith(".json"));
     if (!file) throw new Error("No packaged visual resource");
     const payload = JSON.parse(await file.async("string"));
@@ -195,7 +196,7 @@ test("raw ratios are not normalized without author permission; explicit denomina
     await expect(page.locator(".semantics")).toContainText("No sum is computed");
 });
 
-test("highlights retain base domains, zero highlights, high contrast and RTL stay usable", async ({ page }) => {
+test("highlights retain base domains, zero highlights, high contrast and RTL stay usable", async ({ page }, testInfo) => {
     await load(page, { locale: "ar-SA", highContrast: true });
     const data = matrixFixture();
     data.metadata.objects = { values: { showValues: false } };
@@ -203,6 +204,8 @@ test("highlights retain base domains, zero highlights, high contrast and RTL sta
     Object.assign(data.matrix!.rows.root.children![0].values![3], { highlight: null });
     await update(page, data);
     await expect(page.locator(".atlyn-heatmap")).toHaveAttribute("dir", "rtl");
+    expect(await page.locator(".semantics").evaluate(node => getComputedStyle(node).direction)).toBe("ltr");
+    expect(await page.locator("tbody th").first().evaluate(node => getComputedStyle(node).direction)).toBe("rtl");
     await expect(page.locator("td").first()).toHaveClass(/highlighted/);
     await expect(page.locator("td").nth(1)).toHaveClass(/dimmed/);
     expect(await page.locator("td").first().textContent()).not.toBe("");
@@ -210,6 +213,7 @@ test("highlights retain base domains, zero highlights, high contrast and RTL sta
     await page.locator("td").first().focus();
     await page.keyboard.press("ArrowLeft");
     await expect(page.locator("td").nth(1)).toBeFocused();
+    await page.screenshot({ path: testInfo.outputPath("high-contrast-rtl.png") });
 });
 
 test("tiny, empty, invalid, small, normal, and large packaged states render without lifecycle errors", async ({ page }, testInfo) => {
@@ -231,13 +235,18 @@ test("tiny, empty, invalid, small, normal, and large packaged states render with
     expect((await state(page)).lifecycle.some(event => event.startsWith("failed"))).toBe(false);
 });
 
-test("20k-cell cap is deterministic and does not suggest all rows loaded", async ({ page }) => {
+test("20k-cell cap is deterministic and does not suggest all rows loaded", async ({ page }, testInfo) => {
     await load(page);
-    await update(page, matrixFixture(250, 100, true), 1200, 800);
+    await page.setViewportSize({ width: 1366, height: 768 });
+    await update(page, matrixFixture(250, 100, true), 1366, 768);
     await expect(page.locator("td")).toHaveCount(20000);
     await expect(page.locator(".status")).toContainText("Incomplete");
     await expect(page.getByRole("button", { name: "Load more rows" })).toHaveCount(0);
     await expect(page.locator('td[data-row="201"]')).toHaveCount(0);
+    await page.locator("td").first().focus();
+    await page.keyboard.press("Control+End");
+    await expect(page.locator('td[data-row="200"][data-column="100"]')).toBeFocused();
+    await page.screenshot({ path: testInfo.outputPath("maximum-matrix-scrolled.png") });
 });
 
 test("missing identities and host interaction failures are visible rather than false successes", async ({ page }) => {

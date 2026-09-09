@@ -2,9 +2,9 @@
 
 These synthetic, small datasets demonstrate the v1 contract without external services. All labels are short and business ordering is explicit.
 
-**What is supplied:** local CSVs, Power Query `.pq` queries, DAX measure definitions, and a [report layout recipe](REPORT_LAYOUT.md).
+**What is supplied:** local CSVs, Power Query `.pq` queries, DAX measure definitions, a [manual report layout recipe](REPORT_LAYOUT.md), and a [fully authored bound offline PBIP generator](PBIP.md). `npm run sample` embeds the exact current `.pbiviz` into five pages with six heatmaps, native matrices and slicers, and a six-table inline-data model.
 
-**What is not supplied:** a PBIX or validated PBIP. Producing and verifying a real PBIP with its model/report definitions and custom-visual import requires Desktop validation not available here. Do not rename these files to `.pbip` or treat the layout recipe as a loadable report definition. Save a PBIX, or use Desktop's supported project-save flow, after following and validating the recipe.
+**What remains unverified:** native opening/refresh/rendering of the generated PBIP and genuine Desktop conversion to PBIX. The schema/reference-checked project is real source, but it is not a native-tested report. No fake PBIX is supplied. The instructions below are the alternative manual assembly route, not a requirement to bind fields in the generated project.
 
 ## 1. Import local files in Desktop
 
@@ -77,4 +77,4 @@ Do not use the raw fact label columns as slicers if you expect these dimension-s
 
 These tiny datasets do not trigger the 200-row window, 100-column conservative warning, or 20,000-cell bound. Test those with a separate large model in Desktop/Service per [RELEASE_CHECKLIST.md](../docs/RELEASE_CHECKLIST.md). CSV absence does not guarantee a particular matrix entry representation: inspect the real delivered behavior. Adding a nonblank denominator can cause Power BI to deliver a previously absent combination with a BLANK numerator. The layout recipe leaves Denominator empty for initial raw-state checks, then binds it for the ratio checks.
 
-The report source is local-file based; once dependencies/package are available, the visual needs no external asset or license service. Power BI installation, authentication, tenant policy, or Service itself may still need connectivity. No fully offline host operation, export result, or PBIP compatibility is claimed.
+The manual recipe is local-file based; the generated PBIP embeds the same data in M `#table` expressions and does not require CSV paths. Once dependencies/package are available, the visual needs no external asset or license service. Power BI installation, authentication, tenant policy, or Service itself may still need connectivity. No fully offline host operation, native export result, or native PBIP compatibility is claimed.

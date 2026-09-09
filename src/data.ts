@@ -19,7 +19,8 @@ export interface Cell {
     highlight: Scalar;
     hasHighlight: boolean;
     format?: string;
-    tooltips: { source: powerbi.DataViewMetadataColumn; value: powerbi.PrimitiveValue | undefined }[];
+    denominatorFormat?: string;
+    tooltips: { source: powerbi.DataViewMetadataColumn; value: powerbi.PrimitiveValue | undefined; format?: string }[];
 }
 export interface Model {
     rows: Axis[];
@@ -95,6 +96,12 @@ export function buildModel(dataView: powerbi.DataView | undefined): Model {
     model.rowLevels = matrix.rows.levels;
     model.columnLevels = matrix.columns.levels;
     const sources = matrix.valueSources;
+    if (sources.length > 5) {
+        return fail("Use one numeric Value, at most one numeric Denominator, and up to three tooltip measures.");
+    }
+    if (matrix.rows.levels.length !== 1 || matrix.columns.levels.length < 1 || matrix.columns.levels.length > 2) {
+        return fail("Use exactly one Row field and one Column field; additional category hierarchy levels are not supported.");
+    }
     const validSource = (source: powerbi.DataViewMetadataColumn): boolean => source !== null && typeof source === "object";
     if (!sources.every(validSource)
         || [...matrix.rows.levels, ...matrix.columns.levels].some(level =>
@@ -119,7 +126,7 @@ export function buildModel(dataView: powerbi.DataView | undefined): Model {
         || metadata.filter(source => role(source, "column")).length > 1) {
         return fail("Use exactly one Row field and one Column field; additional category hierarchy levels are not supported.");
     }
-    if (valueIndices.length !== 1 || denominatorIndices.length > 1 || tooltipIndices.length > 3 || sources.length > 5
+    if (valueIndices.length !== 1 || denominatorIndices.length > 1 || tooltipIndices.length > 3
         || metadata.filter(source => role(source, "value")).length > 1
         || metadata.filter(source => role(source, "denominator")).length > 1
         || sources.some(source => ((role(source, "value") || role(source, "denominator")) && !isNumeric(source))
@@ -216,15 +223,13 @@ export function buildModel(dataView: powerbi.DataView | undefined): Model {
         for (let column = 0; column < model.columns.length; column++) {
             const slots = columnSlots[column];
             const measures = new Map<number, powerbi.DataViewMatrixNodeValue>();
-            const invalid = new Set<number>();
             for (let offset = 0; offset < slots.length; offset++) {
                 const key = slots[offset];
                 if (!values || !owns(values, key)) continue;
                 const entry = values[key];
                 if (entry === undefined) continue;
-                if (entry === null || typeof entry !== "object") {
-                    invalid.add(offset % sources.length);
-                    continue;
+                if (entry === null || typeof entry !== "object" || Array.isArray(entry)) {
+                    return fail("The host returned an invalid matrix structure.");
                 }
                 const sourceIndex = entry.valueSourceIndex ?? 0;
                 if (!Number.isInteger(sourceIndex) || sourceIndex < 0 || sourceIndex >= sources.length) {
@@ -232,7 +237,7 @@ export function buildModel(dataView: powerbi.DataView | undefined): Model {
                 }
                 if ((!owns(entry, "value") || entry.value === undefined) && !owns(entry, "highlight")
                     && typeof entry.objects?.general?.formatString !== "string") continue;
-                if (measures.has(sourceIndex)) invalid.add(sourceIndex);
+                if (measures.has(sourceIndex)) return fail("The host returned an invalid matrix measure index.");
                 measures.set(sourceIndex, entry);
             }
             const measureValue = (index: number): powerbi.PrimitiveValue | undefined => {
@@ -240,17 +245,23 @@ export function buildModel(dataView: powerbi.DataView | undefined): Model {
                 return entry && owns(entry, "value") ? entry.value : undefined;
             };
             const read = (index: number | undefined): Scalar => index === undefined ? { state: "unavailable" }
-                : invalid.has(index) ? { state: "invalid" } : scalar(measureValue(index), model.partial);
+                : scalar(measureValue(index), model.partial);
+            const measureFormat = (index: number | undefined): string | undefined => {
+                const format = index === undefined ? undefined : measures.get(index)?.objects?.general?.formatString;
+                return typeof format === "string" ? format : undefined;
+            };
             const entry = measures.get(valueIndex);
             const hasHighlight = entry !== undefined && owns(entry, "highlight");
-            const format = entry?.objects?.general?.formatString;
             model.hasHighlights ||= hasHighlight;
             model.cells.push({
                 row, column, raw: read(valueIndex), denominator: read(denominatorIndex),
                 highlight: hasHighlight ? scalar(entry?.highlight, model.partial) : { state: "absent" },
                 hasHighlight,
-                format: typeof format === "string" ? format : undefined,
-                tooltips: tooltipIndices.map(index => ({ source: sources[index], value: measureValue(index) }))
+                format: measureFormat(valueIndex),
+                denominatorFormat: measureFormat(denominatorIndex),
+                tooltips: tooltipIndices.map(index => ({
+                    source: sources[index], value: measureValue(index), format: measureFormat(index)
+                }))
             });
         }
     }

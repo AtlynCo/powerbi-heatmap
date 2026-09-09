@@ -1,12 +1,12 @@
 # v1 release checklist
 
-All boxes below are **unverified blockers** until supported by dated evidence for the exact candidate package. Do not check a host gate based on a mocked host or standalone browser screenshot. This checklist authorizes no publication, Partner Center action, public-repository change, or release.
+Unchecked boxes are **unverified blockers** until supported by dated evidence for the exact candidate package. Do not check a host gate based on a mocked host or standalone browser screenshot. The parent coordinator owns authorized publication and Partner Center actions; this child prepares local artifacts only. GitHub Actions remains disabled, no workflows are present, and no hosted CI results count as current release proof.
 
 Record automated outcomes in [VALIDATION.md](VALIDATION.md), including failures and environmental limitations. For manual evidence, record tester, date, Desktop/Service/browser version, OS, locale, tenant settings, candidate version/hash, source report, expected result, actual result, and evidence location. Do not capture customer data.
 
 ## Artifact and automated evidence
 
-- [ ] Confirm GUID `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37`, `.pbiviz` version `1.0.0.0`, private package `@atlyn/heatmap` `1.0.0`, host API contract (`apiVersion`) `5.11.0`, `powerbi-visuals-api` SDK npm package `5.11.1`, visuals tools `7.2.1`, TypeScript `5.9.3`, and Node `>=22`. Official tools normalize the supported host contract to `5.11.0`; verify the manifest and package audit use that value rather than the npm package version.
+- [ ] Confirm GUID `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37`, `.pbiviz` version `1.0.1.0`, private package `@atlyn/heatmap` `1.0.1`, host API contract (`apiVersion`) `5.11.0`, `powerbi-visuals-api` SDK npm package `5.11.1`, visuals tools `7.2.1`, TypeScript `5.9.3`, and Node `>=22`. Official tools normalize the supported host contract to `5.11.0`; verify the manifest and package audit use that value rather than the npm package version.
 - [ ] Record results of `typecheck`, `lint`, `test`, `package`, `audit:package`, and `test:browser` for the candidate. Check what `validate` actually runs rather than assuming coverage.
 - [ ] Run/record full `npm audit` and `audit:dependencies` separately; assess production advisories and packaged runtime exposure. Confirm the development-only `qs` `6.16.0` and `sockjs` → `uuid` `11.1.1` mitigations in the lockfile/dependency graph. Do not equate a production-only audit with auditing every development tool; record dated vulnerability counts in `VALIDATION.md`.
 - [ ] Generate/check `THIRD_PARTY_NOTICES.md`, including the MIT scaffold attribution and applicable bundled-component licenses. Confirm original Atlyn work remains all rights reserved.
@@ -19,6 +19,7 @@ Record automated outcomes in [VALIDATION.md](VALIDATION.md), including failures 
 ## Native Power BI Desktop
 
 - [ ] Import the actual `.pbiviz` from disk into the supported Desktop version. Open/save/reopen the sample report without a development server. Check normal view, focus mode, resizing, filters, and slicers.
+- [ ] Run Microsoft's current submission-test sample dataset in Desktop/Service. Record arbitrary bucket removal and native chart/gauge conversion, format pane state, saved settings/bookmarks, multiple versions/instances/pages, touch/mobile interaction and dashboard pin results.
 - [ ] Bind exactly one Row, one Column, and one numeric Value; verify the optional single numeric Denominator and at most three numeric or text Tooltip measures. Check invalid binding guidance rather than assuming role enforcement.
 - [ ] Validate both [offline source recipes](../samples/README.md), custom model sort order, explicit zero, BLANK, and an absent intersection. Verify that absent source data is not changed to zero.
 - [ ] Check subtotal exclusion and unsupported hierarchy inputs. Confirm no accidental totals, drilldown behavior, or invented categories.
@@ -65,6 +66,6 @@ Record automated outcomes in [VALIDATION.md](VALIDATION.md), including failures 
 - [ ] Test actual supported Power BI PDF/PowerPoint/image export paths and record host/tenant availability. Export **only the current viewport**; do not promise the entire scrolled matrix.
 - [ ] Test scrolled and unscrolled states: clipping, sticky headers, selected/highlighted states, high contrast, fonts, warnings, and tiny-size guidance. Record if a host export path resets scrolling or otherwise differs from the live viewport.
 - [ ] Capture real package-in-host screenshots for the product-region and defect-line scenarios, including a state/legend example; no mockups labeled as product screenshots.
-- [ ] Validate that offline sample source can be assembled in Desktop using the documented steps. No PBIX/PBIP validation is claimed unless such an artifact is actually produced and tested.
+- [ ] Open and refresh the generated bound offline PBIP, inspect its exact embedded package, and save a genuine PBIX. Do not equate schema/reference checks with successful Desktop loading.
 - [ ] Verify support link ownership/availability, mailbox delivery, and actual support responsiveness. Metadata alone is insufficient.
 - [ ] Complete [SUBMISSION.md](SUBMISSION.md) evidence/permission TODOs. Microsoft certification is **not claimed** and remains a separate Microsoft process.

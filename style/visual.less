@@ -34,11 +34,12 @@
         scrollbar-gutter: stable;
     }
     .toolbar { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
-    .title { font-weight: 650; flex: 1; }
+    .title { font-weight: 650; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .semantics { margin-block-start: 3px; }
     .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-block-start: 4px; }
     .ramp { display: inline-flex; direction: ltr; width: 90px; height: 12px; border: 1px solid var(--border); }
     .swatch { flex: 1; }
+    .scope-warning { font-weight: 600; }
     .viewport { flex: 1 1 auto; min-height: 0; min-width: 0; overflow: auto; position: relative; isolation: isolate; }
     table { table-layout: fixed; border-collapse: separate; border-spacing: 2px; min-width: 100%; }
     th, td {
@@ -68,10 +69,11 @@
     }
     td[data-state="invalid"], td[data-state="unavailable"] { border-style: dashed; }
     [aria-disabled="true"] { cursor: default; }
-    [aria-selected="true"] { box-shadow: inset 0 0 0 3px var(--focus); }
+    [aria-selected="true"] { box-shadow: inset 0 0 0 3px currentColor; }
+    td:focus-visible { outline: 3px double currentColor; outline-offset: -6px; }
     .highlighted::after { content: ""; position: absolute; inset-block-start: 3px; inset-inline-end: 3px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
     .highlighted { outline: 1px solid currentColor; outline-offset: -3px; }
-    .dimmed { opacity: 0.42; }
+    .dimmed { border-style: dashed; }
     .footer {
         flex: 0 0 auto;
         max-height: 26%;
@@ -85,6 +87,8 @@
     .empty { padding: 12px; overflow: auto; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
     &.tiny .heading, &.tiny .footer { display: none; }
+    &.tiny .empty { min-height: 100%; display: grid; place-items: center; padding: 8px; text-align: center; }
+    &.compact .toolbar { flex-wrap: nowrap; gap: 4px; }
     &.high-contrast {
         --header: var(--background);
         --muted: var(--foreground);

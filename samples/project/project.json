@@ -1,0 +1,109 @@
+{
+  "guid": "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37",
+  "version": "1.0.1.0",
+  "datasets": [
+    {
+      "table": "ProductRegion",
+      "input": "product-region",
+      "dimensions": ["Product", "Region"],
+      "columns": [
+        { "name": "Product", "type": "string" },
+        { "name": "ProductSort", "type": "int64" },
+        { "name": "Region", "type": "string" },
+        { "name": "RegionSort", "type": "int64" },
+        { "name": "Revenue", "type": "double" }
+      ],
+      "formats": {
+        "Total Revenue": "$#,0;($#,0);$0",
+        "Product Revenue Across Regions": "$#,0;($#,0);$0",
+        "Revenue Records": "#,0",
+        "Revenue Share Across Regions": "0.0%"
+      },
+      "value": "Total Revenue",
+      "denominator": "Product Revenue Across Regions",
+      "records": "Revenue Records",
+      "ratio": "Revenue Share Across Regions"
+    },
+    {
+      "table": "DefectLine",
+      "input": "defect-line",
+      "dimensions": ["Defect", "Line"],
+      "columns": [
+        { "name": "Defect", "type": "string" },
+        { "name": "DefectSort", "type": "int64" },
+        { "name": "Line", "type": "string" },
+        { "name": "LineSort", "type": "int64" },
+        { "name": "Defects", "type": "int64" },
+        { "name": "Opportunities", "type": "int64" }
+      ],
+      "formats": {
+        "Defect Count": "#,0",
+        "Line Inspection Opportunities": "#,0",
+        "Defect Records": "#,0",
+        "Defects Per Opportunity": "0.0%"
+      },
+      "value": "Defect Count",
+      "denominator": "Line Inspection Opportunities",
+      "records": "Defect Records",
+      "ratio": "Defects Per Opportunity"
+    }
+  ],
+  "pages": [
+    {
+      "name": "revenueRaw",
+      "displayName": "01 Revenue - raw",
+      "dataset": "ProductRegion",
+      "heading": "Operations by region | Synthetic revenue",
+      "intro": "Raw model currency; one GLOBAL sequential color scale. Compare both color and value across the whole loaded grid. Select cells or headers and inspect the native matrix.",
+      "heatmaps": [
+        { "name": "revenueRawGlobal", "title": "Revenue | raw / global", "normalization": "raw", "scope": "global", "additive": false }
+      ],
+      "footer": "Pumps/North is 0; Pumps/West is an explicit BLANK; Filters/East has no fact record. Absence depends on the host matrix representation and completeness. Tooltips include record counts, not a fabricated zero."
+    },
+    {
+      "name": "revenueShares",
+      "displayName": "02 Revenue - row shares",
+      "dataset": "ProductRegion",
+      "heading": "Row shares | Same numbers, different color scopes",
+      "intro": "Both visuals assert nonnegative ADDITIVE revenue and divide by the loaded row total. Global colors are comparable; per-row colors are NOT comparable between products. Neither setting changes the model measure.",
+      "heatmaps": [
+        { "name": "revenueShareGlobal", "title": "Row share | GLOBAL colors", "normalization": "row", "scope": "global", "additive": true },
+        { "name": "revenueShareRow", "title": "Row share | PER-ROW colors", "normalization": "row", "scope": "row", "additive": true }
+      ],
+      "footer": "Without filters, Pumps/Central is 40.0% in BOTH grids. Filter Region to Central: the visible row share becomes 100.0%. The model-authored share in the native matrix remains 40.0%; it removes the Region dimension filter."
+    },
+    {
+      "name": "defectsRaw",
+      "displayName": "03 Defects - counts",
+      "dataset": "DefectLine",
+      "heading": "Defects by line | Synthetic event counts",
+      "intro": "Raw defect counts; one GLOBAL sequential color scale. Model sort order is Scratch, Dent, Seal, Label and Line B, Line A, Line C. Colors describe loaded counts, not defect rates.",
+      "heatmaps": [
+        { "name": "defectsRawGlobal", "title": "Defect count | raw / global", "normalization": "raw", "scope": "global", "additive": false }
+      ],
+      "footer": "Scratch/Line B is 0; Dent/Line A is BLANK; Label/Line C has no fact record. Opportunities repeat by defect in the input and MUST NOT be summed over those repeated rows."
+    },
+    {
+      "name": "defectsDenominator",
+      "displayName": "04 Defects - opportunities",
+      "dataset": "DefectLine",
+      "heading": "Defects per opportunity | Explicit model denominator",
+      "intro": "Denominator is the model's Line Inspection Opportunities measure. It removes Defect filters and counts exposure once per line. This is NOT share of visible defects; the additive assertion stays OFF.",
+      "heatmaps": [
+        { "name": "defectsPerOpportunity", "title": "Count / model opportunities | global", "normalization": "denominator", "scope": "global", "additive": false, "denominator": true }
+      ],
+      "footer": "Seal/Line B = 4 / 200 = 2.0%. Select only Seal in the Defect slicer: denominator remains 200 for Line B. At multiple-line totals opportunities are 200 + 160 + 100 = 460, not the sum of repeated exposures."
+    },
+    {
+      "name": "interpretation",
+      "displayName": "05 Interpretation and keyboard",
+      "dataset": "ProductRegion",
+      "heading": "Interpretation and keyboard | Model versus visible totals",
+      "intro": "Use Tab to reach the heatmap, then arrows/Home/End to move. Enter/Space selects; Ctrl/Cmd adds selection; Escape clears; Shift+F10 opens the context menu. Verify actual host keyboard and accessibility behavior before release.",
+      "heatmaps": [
+        { "name": "revenueModelDenominator", "title": "Revenue / model product total | global", "normalization": "denominator", "scope": "global", "additive": false, "denominator": true }
+      ],
+      "footer": "Filter Region to Central: Pumps stays 40.0% because its model denominator ignores Region, including RegionSort. Page 02 asks a different question. BLANK is not zero; colors never establish causality. Desktop refresh/open/export remain unverified."
+    }
+  ]
+}

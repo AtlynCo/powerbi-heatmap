@@ -1,6 +1,6 @@
 # Offline report layout recipe
 
-Assemble this layout in Desktop after [importing the sample queries and measures](README.md). This is human-readable report source, **not** a PBIP/report JSON definition. No screenshots, packaged reports, or successful host-test claims are included.
+This is the optional manual assembly recipe after [importing the sample queries and measures](README.md), not a PBIP definition itself. Prefer the separately supplied [bound offline PBIP generator](PBIP.md) to avoid manual field binding. Neither route claims successful native-host testing.
 
 Use a 1280 × 720 page canvas. Suggested coordinates and sizes are in canvas pixels; adjust for the host's formatting UI. Import the local `.pbiviz` once, then reuse that one visual type across pages.
 
@@ -60,4 +60,4 @@ Duplicate a heatmap at 400 × 220 to force scrolling only if content exceeds tha
 
 Use keyboard-only navigation, Shift+F10, Ctrl/Cmd selection, Escape, and a native companion chart. Test high contrast, RTL, screen readers, host tooltips/report-page tooltips, and export through the actual host. Capture real screenshots only after importing the candidate package.
 
-Save the report locally after validation. A supported Desktop **Save as Power BI Project** flow may be used by the tester if available; validate its custom-visual references and refresh paths before distributing it. No PBIP is supplied or assumed by this recipe.
+Save the report locally after validation. A supported Desktop **Save as Power BI Project** flow may be used by the tester if available; validate its custom-visual references and refresh paths before distributing it. This manual recipe is independent of the generated PBIP documented in [PBIP.md](PBIP.md).

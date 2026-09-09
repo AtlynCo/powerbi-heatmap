@@ -16,7 +16,7 @@ Use matrix mapping with a row `window` count of 200 and column `top` count of 10
 
 Display labels and tooltip text are bounded to 1,024 characters, including `...` when truncated. This presentation limit does not truncate or replace original model selection identities. Distinct identities must remain distinct even when shortened labels look the same.
 
-Raw cell values, accessible values, and raw tooltip values honor cell-level `general.formatString` metadata **when the host supplies it**; otherwise fall back to the measure's supplied source format. Legends use measure metadata rather than an individual cell's override. Derived percentages retain their `0.0%` format. Do not infer a dynamic cell format from formatted text, another cell, or a category label. Real Desktop/Service delivery and fallback behavior remain manual validation requirements.
+Raw cell values, accessible values, denominators and each tooltip measure honor their own cell-level `general.formatString` metadata **when the host supplies it**; otherwise fall back to that measure's supplied source format. Legends use measure metadata rather than an individual cell's override. Derived percentages retain their `0.0%` format. Do not infer a dynamic cell format from formatted text, another cell, or a category label. Real Desktop/Service delivery and fallback behavior remain manual validation requirements.
 
 Ignore subtotal nodes on both axes. No totals or hierarchy drilldown are displayed. Use one field per axis, rather than treating hierarchy levels or subtotal nodes as data cells. Model measures supply aggregation; the visual does not sum precomputed ratios.
 
@@ -25,7 +25,7 @@ Ignore subtotal nodes on both axes. No totals or hierarchy drilldown are display
 1. Render the valid delivered axes and their bounded dense intersections.
 2. When `metadata.segment` exists and bounds allow growth, expose **Load more rows**. Each deliberate activation requests `fetchMoreData(true)`; aggregation belongs to the host. Do not auto-fetch.
 3. Stop at 500 rows, 100 columns, or 20,000 dense cells. The effective row bound is the smaller of 500 and `floor(20000 / returnedColumnCount)` for a nonempty column axis. At 100 columns, only 200 rows fit.
-4. Stop if fetching is rejected or fails to make progress. Do not retry indefinitely or announce complete data.
+4. Stop if fetching is rejected, throws, or fails to make progress. Filling unknown intersections counts as progress even without additional axis categories. Keep the actual refusal/failure reason across resize. Do not retry indefinitely or announce complete data.
 5. A segment, truncation, rejected/no-progress continuation, or other reduction warning means completeness is uncertain. A returned count of **100 columns always triggers a conservative “possibly reduced” disclosure**, even when no segment exists; an exactly-100-column complete model is indistinguishable from capped columns here.
 6. Keep incomplete/reduced disclosure visible; explain whether a limit or continuation failure prevents further loading. Do not label a locally bounded matrix “all data.”
 
@@ -45,7 +45,7 @@ These are **Value** states. Text is valid in optional Tooltip measures and is di
 | No value entry at an intersection of delivered axes; incomplete/reduced warning | Unknown/unloaded | `?` |
 | Numeric numerator for which the requested derived calculation cannot be used | Derived unavailable | `n/a` |
 
-A numeric-looking string is still invalid. Do not parse or coerce it to a number. Never fill BLANK, absent, or unknown cells with zero. An explicit null remains BLANK on a partial matrix; an explicit invalid value remains invalid. In derived modes, preserve these source-state distinctions instead of turning every nonnumeric source cell into `n/a`.
+A numeric-looking string is still invalid. Do not parse or coerce it to a number. Never fill BLANK, absent, or unknown cells with zero. An explicit null remains BLANK on a partial matrix; an explicit invalid value remains invalid. In derived modes, preserve these source-state distinctions instead of turning every nonnumeric source cell into `n/a`. Malformed matrix wrappers and duplicate measure indexes are structural errors for the whole returned matrix, not a license to guess which measure was intended.
 
 In raw mode a negative finite value is valid. Zero is data even when a requested normalization has no valid result: `n/a` represents that unavailable calculation, with raw zero still identified in the accessible label/tooltip. Zero and missing-state symbols remain visible when numeric-value display is turned off.
 

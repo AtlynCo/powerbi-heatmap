@@ -2,7 +2,9 @@ import { readFileSync } from "node:fs";
 import JSZip from "jszip";
 
 export const guid = "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37";
-export const packagePath = new URL(`../dist/${guid}.1.0.0.0.pbiviz`, import.meta.url);
+export const config = JSON.parse(readFileSync(new URL("../pbiviz.json", import.meta.url), "utf8"));
+export const version = config.visual.version;
+export const packagePath = new URL(`../dist/${guid}.${version}.pbiviz`, import.meta.url);
 
 export async function readPackage() {
     const bytes = readFileSync(packagePath);

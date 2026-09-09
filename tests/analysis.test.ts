@@ -119,6 +119,26 @@ test("overflow-sized and subnormal values normalize using scaled finite sums", (
     assert.deepEqual(tiny.cells.map(cell => cell.displayed.value), [0.5, 0.5]);
 });
 
+test("finite share totals avoid double rounding a representable subnormal share down to zero", () => {
+    const result = analyze(values([[Number.MIN_VALUE, 0.75, 0.75]]),
+        { ...defaults, normalization: "all", additive: true });
+    assert.equal(result.cells[0].displayed.value, Number.MIN_VALUE / 1.5);
+    assert.equal(result.cells[0].displayed.value, Number.MIN_VALUE);
+    assert.equal(result.cells[1].displayed.value, 0.5);
+});
+
+test("small positive contributions survive summation regardless of delivered order", () => {
+    const small = Number.EPSILON / 2;
+    const input = [1, ...Array<number>(499).fill(small)];
+    const total = 1 + 499 * small;
+    for (const ordered of [input, [...input].reverse()]) {
+        const model = values(ordered.map(value => [value]));
+        const result = analyze(model, { ...defaults, normalization: "all", additive: true });
+        assert.equal(result.error, undefined);
+        result.cells.forEach((cell, index) => assert.equal(cell.displayed.value, ordered[index] / total));
+    }
+});
+
 test("explicit denominators need no additive consent, allow negative numerator and retain raw values", () => {
     const model = values([[-5, 0, 20, null, undefined, "invalid"]]);
     const result = analyze(model, { ...defaults, normalization: "denominator" });
@@ -217,6 +237,15 @@ test("extreme signed, subnormal and adjacent finite domains never overflow palet
         assert.equal(colorFor(domain.max, domain, "sequential"), "#08519c");
     }
     assert.equal(colorFor(0, domains[0], "sequential"), "#7ca4ce");
+});
+
+test("close finite color domains preserve relative positions instead of cancelling scaled values", () => {
+    const min = 1e16;
+    const max = min + 10;
+    assert.equal(colorFor(min + 4, { min, max }, "sequential"),
+        colorFor(4, { min: 0, max: 10 }, "sequential"));
+    assert.equal(colorFor(-(min + 4), { min: -max, max: -min }, "sequential"),
+        colorFor(6, { min: 0, max: 10 }, "sequential"));
 });
 
 function contrast(background: string, foreground: string): number {

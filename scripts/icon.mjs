@@ -1,19 +1,6 @@
 import { deflateSync } from "node:zlib";
 import { writeFileSync } from "node:fs";
 
-// Lossless, deterministic 20px icon; the adjacent SVG is the editable design.
-const pixels = Buffer.alloc(20 * (1 + 20 * 4), 255);
-const palette = [[189, 215, 231], [107, 174, 214], [8, 81, 156]];
-const cells = [[0, 1, 2], [0, 2, 1], [0, 1, 2]];
-for (let y = 0; y < 20; y++) {
-    pixels[y * 81] = 0;
-    for (let x = 0; x < 20; x++) {
-        const r = Math.floor((y - 2) / 6);
-        const c = Math.floor((x - 2) / 6);
-        if (r < 0 || c < 0 || r > 2 || c > 2 || (y - 2) % 6 >= 4 || (x - 2) % 6 >= 4) continue;
-        for (let channel = 0; channel < 3; channel++) pixels[y * 81 + 1 + x * 4 + channel] = palette[cells[r][c]][channel];
-    }
-}
 function crc32(data) {
     let crc = 0xffffffff;
     for (const byte of data) {
@@ -30,12 +17,32 @@ function chunk(type, data) {
     crc.writeUInt32BE(crc32(Buffer.concat([tag, data])));
     return Buffer.concat([length, tag, data, crc]);
 }
-const header = Buffer.alloc(13);
-header.writeUInt32BE(20, 0);
-header.writeUInt32BE(20, 4);
-header[8] = 8;
-header[9] = 6;
-writeFileSync(new URL("../assets/icon.png", import.meta.url), Buffer.concat([
-    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-    chunk("IHDR", header), chunk("IDAT", deflateSync(pixels)), chunk("IEND", Buffer.alloc(0))
-]));
+// Both sizes use the same grid design, without external image assets.
+function icon(size, filename) {
+    const stride = 1 + size * 4;
+    const pixels = Buffer.alloc(size * stride, 255);
+    const palette = [[189, 215, 231], [107, 174, 214], [8, 81, 156]];
+    const cells = [[0, 1, 2], [0, 2, 1], [0, 1, 2]];
+    for (let y = 0; y < size; y++) {
+        pixels[y * stride] = 0;
+        for (let x = 0; x < size; x++) {
+            const sy = Math.floor(y * 20 / size);
+            const sx = Math.floor(x * 20 / size);
+            const r = Math.floor((sy - 2) / 6);
+            const c = Math.floor((sx - 2) / 6);
+            if (r < 0 || c < 0 || r > 2 || c > 2 || (sy - 2) % 6 >= 4 || (sx - 2) % 6 >= 4) continue;
+            for (let channel = 0; channel < 3; channel++) pixels[y * stride + 1 + x * 4 + channel] = palette[cells[r][c]][channel];
+        }
+    }
+    const header = Buffer.alloc(13);
+    header.writeUInt32BE(size, 0);
+    header.writeUInt32BE(size, 4);
+    header[8] = 8;
+    header[9] = 6;
+    writeFileSync(new URL(`../assets/${filename}`, import.meta.url), Buffer.concat([
+        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+        chunk("IHDR", header), chunk("IDAT", deflateSync(pixels)), chunk("IEND", Buffer.alloc(0))
+    ]));
+}
+icon(20, "icon.png");
+icon(300, "icon300.png");
