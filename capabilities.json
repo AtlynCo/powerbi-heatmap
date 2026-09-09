@@ -1,0 +1,55 @@
+{
+  "dataRoles": [
+    { "name": "row", "displayName": "Row", "displayNameKey": "Role_Row", "kind": "Grouping" },
+    { "name": "column", "displayName": "Column", "displayNameKey": "Role_Column", "kind": "Grouping" },
+    { "name": "value", "displayName": "Value", "displayNameKey": "Role_Value", "kind": "Measure", "requiredTypes": [{ "numeric": true }] },
+    { "name": "denominator", "displayName": "Denominator (optional)", "displayNameKey": "Role_Denominator", "kind": "Measure", "requiredTypes": [{ "numeric": true }] },
+    { "name": "tooltips", "displayName": "Tooltips", "displayNameKey": "Role_Tooltips", "kind": "Measure" }
+  ],
+  "dataViewMappings": [
+    {
+      "conditions": [{ "row": { "max": 1 }, "column": { "max": 1 }, "value": { "min": 1, "max": 1 }, "denominator": { "max": 1 }, "tooltips": { "max": 3 } }],
+      "matrix": {
+        "rows": { "for": { "in": "row" }, "dataReductionAlgorithm": { "window": { "count": 200 } } },
+        "columns": { "for": { "in": "column" }, "dataReductionAlgorithm": { "top": { "count": 100 } } },
+        "values": { "select": [{ "bind": { "to": "value" } }, { "bind": { "to": "denominator" } }, { "for": { "in": "tooltips" } }] }
+      }
+    }
+  ],
+  "objects": {
+    "scale": {
+      "displayName": "Color scale",
+      "displayNameKey": "Format_Scale",
+      "properties": {
+        "scope": { "type": { "enumeration": [{ "value": "global", "displayName": "Global" }, { "value": "row", "displayName": "Per row" }, { "value": "column", "displayName": "Per column" }] } },
+        "palette": { "type": { "enumeration": [{ "value": "sequential", "displayName": "Sequential blue" }, { "value": "diverging", "displayName": "Diverging, centered at zero" }] } }
+      }
+    },
+    "values": {
+      "displayName": "Values and denominators",
+      "displayNameKey": "Format_Values",
+      "properties": {
+        "normalization": { "type": { "enumeration": [{ "value": "raw", "displayName": "Raw (model value)" }, { "value": "row", "displayName": "Share of row" }, { "value": "column", "displayName": "Share of column" }, { "value": "all", "displayName": "Share of all cells" }, { "value": "denominator", "displayName": "Value / supplied denominator" }] } },
+        "additive": { "type": { "bool": true } },
+        "showValues": { "type": { "bool": true } }
+      }
+    },
+    "layout": {
+      "displayName": "Grid layout",
+      "displayNameKey": "Format_Layout",
+      "properties": {
+        "cellWidth": { "type": { "numeric": true } },
+        "cellHeight": { "type": { "numeric": true } },
+        "labelWidth": { "type": { "numeric": true } },
+        "fontSize": { "type": { "formatting": { "fontSize": true } } }
+      }
+    }
+  },
+  "sorting": { "default": {} },
+  "supportsHighlight": true,
+  "supportsMultiVisualSelection": true,
+  "supportsKeyboardFocus": true,
+  "supportsEmptyDataView": true,
+  "tooltips": { "supportedTypes": { "default": true, "canvas": true }, "roles": ["tooltips"] },
+  "privileges": []
+}

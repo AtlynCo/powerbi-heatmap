@@ -1,0 +1,16 @@
+Product,ProductSort,Region,RegionSort,Revenue
+Pumps,10,North,10,0
+Pumps,10,West,20,
+Pumps,10,Central,30,1200
+Pumps,10,East,40,1800
+Valves,20,North,10,2400
+Valves,20,West,20,1600
+Valves,20,Central,30,800
+Valves,20,East,40,1200
+Sensors,30,North,10,900
+Sensors,30,West,20,1500
+Sensors,30,Central,30,2100
+Sensors,30,East,40,500
+Filters,40,North,10,700
+Filters,40,West,20,1300
+Filters,40,Central,30,2000
