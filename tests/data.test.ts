@@ -218,6 +218,25 @@ test("denominator and tooltip cell formats never replace the Value cell format",
     assert.equal(buildModel(view).cells[0].format, undefined);
 });
 
+test("all measure roles preserve their own cell format overrides and source identities", () => {
+    const view = matrixFixture(1, 2);
+    const values = view.matrix!.rows.root.children![0].values!;
+    values[0].objects = { general: { formatString: "$0.00" } };
+    values[1].objects = { general: { formatString: "0.000" } };
+    values[2].objects = { general: { formatString: "0.0%" } };
+    values[4].objects = { general: { formatString: "" } };
+    values[5].objects = { general: { formatString: 123 } };
+    const model = buildModel(view);
+    assert.equal(model.cells[0].format, "$0.00");
+    assert.equal(model.cells[0].denominatorFormat, "0.000");
+    assert.equal(model.cells[0].tooltips[0].format, "0.0%");
+    assert.equal(model.cells[1].format, undefined);
+    assert.equal(model.cells[1].denominatorFormat, "");
+    assert.equal(model.cells[1].tooltips[0].format, undefined);
+    assert.equal(model.cells[0].tooltips[0].source, view.matrix!.valueSources[2]);
+    assert.equal(model.denominatorSource, view.matrix!.valueSources[1]);
+});
+
 test("up to three tooltip measures retain their individual source and primitive values", () => {
     const view = matrixFixture(1, 1);
     const matrix = view.matrix!;
@@ -295,6 +314,67 @@ test("malformed host arrays and nodes fail with model errors instead of throwing
         { ...matrixFixture(), matrix: { ...matrixFixture().matrix, columns: { root: { children: [null] }, levels: [] } } }
     ];
     for (const view of malformed) assert.ok(buildModel(view as unknown as powerbi.DataView).error);
+});
+
+test("malformed measure wrappers fail closed rather than attributing a bad slot to another measure", () => {
+    for (const malformed of [null, 42, "bad", [], true]) {
+        const view = matrixFixture(1, 1);
+        view.matrix!.columns.root.children![0].children!.unshift({ level: 1, isSubtotal: true });
+        view.matrix!.rows.root.children![0].values = {
+            0: { value: 999 },
+            1: { value: 10 },
+            2: malformed as unknown as powerbi.DataViewMatrixNodeValue,
+            3: { value: 30, valueSourceIndex: 2 }
+        };
+        const model = buildModel(view);
+        assert.match(model.error!, /invalid matrix structure/);
+        assert.deepEqual(model.cells, []);
+    }
+});
+
+test("duplicate measure indexes cannot select the last raw, denominator, tooltip or highlight value", () => {
+    for (const index of [0, 1, 2]) {
+        const view = matrixFixture(1, 1);
+        view.matrix!.rows.root.children![0].values = {
+            0: { value: 1, valueSourceIndex: index, highlight: 1 },
+            1: { value: 999, valueSourceIndex: index, highlight: 999 }
+        };
+        const model = buildModel(view);
+        assert.match(model.error!, /invalid matrix measure index/);
+        assert.deepEqual(model.cells, []);
+        assert.equal(model.hasHighlights, false);
+    }
+});
+
+test("replacement views recompute completeness and source states rather than retaining a prior segment", () => {
+    const view = singleMeasure();
+    delete view.matrix!.rows.root.children![0].values![1];
+    view.metadata.segment = {};
+    const first = buildModel(view);
+    assert.equal(first.cells[1].raw.state, "unloaded");
+    delete view.metadata.segment;
+    const replacement = buildModel(view);
+    assert.equal(replacement.segment, false);
+    assert.equal(replacement.partial, false);
+    assert.equal(replacement.limited, false);
+    assert.equal(replacement.cells[1].raw.state, "absent");
+    assert.deepEqual(replacement.notices, []);
+    assert.equal(first.partial, true);
+    assert.equal(first.cells[1].raw.state, "unloaded");
+});
+
+test("invalid metadata cardinalities are rejected before walking arbitrarily long arrays", () => {
+    const measures = matrixFixture(1, 1);
+    measures.matrix!.valueSources.length = MAX_CELLS;
+    Object.defineProperty(measures.matrix!.valueSources, 5, {
+        get: () => { throw new Error("Unbounded measure metadata access"); }
+    });
+    const hierarchy = matrixFixture(1, 1);
+    hierarchy.matrix!.rows.levels.length = MAX_CELLS;
+    Object.defineProperty(hierarchy.matrix!.rows.levels, 1, {
+        get: () => { throw new Error("Unbounded hierarchy metadata access"); }
+    });
+    for (const view of [measures, hierarchy]) assert.ok(buildModel(view).error);
 });
 
 test("exactly 100 returned columns is conservatively partial, while 99 is complete", () => {

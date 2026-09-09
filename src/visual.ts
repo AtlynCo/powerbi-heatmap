@@ -23,7 +23,11 @@ interface GridItem {
 function element<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
     const node = document.createElement(tag);
     if (className) node.className = className;
-    if (text !== undefined) node.textContent = text;
+    if (text !== undefined) {
+        node.textContent = text;
+        // Localized prose can fall back to English inside an RTL report.
+        if (tag === "div" || tag === "summary" || tag === "pre") node.dir = "auto";
+    }
     return node;
 }
 
@@ -51,11 +55,14 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     private loadButton?: HTMLButtonElement;
     private pending = false;
     private fetchStopped = false;
+    private fetchNotice?: StringKey;
+    private readonly formatCache = new Map<string, string>();
     private fetchTimer?: ReturnType<typeof setTimeout>;
     private generation = 0;
     private destroyed = false;
     private highContrast = false;
     private rtl = false;
+    private compact = false;
 
     constructor(options?: powerbi.extensibility.visual.VisualConstructorOptions) {
         if (!options) throw new Error("Power BI visual constructor options are required.");
@@ -66,6 +73,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.root.append(this.heading, this.viewport, this.footer, this.live);
         this.live.setAttribute("aria-live", "polite");
         this.live.setAttribute("aria-atomic", "true");
+        this.status.dir = "auto";
+        this.scopeLabel.dir = "auto";
         this.root.setAttribute("aria-label", this.t("Title"));
         options.element.appendChild(this.root);
         this.selection.registerOnSelectCallback(() => {
@@ -82,6 +91,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     }
 
     public update(options: UpdateOptions): void {
+        if (this.destroyed) return;
         this.host.eventService.renderingStarted(options);
         try {
             const isData = !!(options.type & powerbi.VisualUpdateType.Data);
@@ -89,9 +99,12 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             if (dataView || isData) {
                 const previousCount = this.model.cells.length;
                 const wasPending = this.pending;
+                const previousObserved = wasPending ? this.model.cells.filter(cell => cell.raw.state !== "unloaded" && cell.raw.state !== "absent").length : 0;
                 if (isData) {
                     this.generation++;
                     this.pending = false;
+                    this.fetchNotice = undefined;
+                    this.formatCache.clear();
                     if (this.fetchTimer) clearTimeout(this.fetchTimer);
                     if (options.operationKind !== powerbi.VisualDataChangeOperationKind.Append) {
                         this.fetchStopped = false;
@@ -102,8 +115,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                     ? this.formatting.populateFormattingSettingsModel(VisualFormattingSettingsModel, dataView)
                     : new VisualFormattingSettingsModel();
                 if (isData && wasPending && options.operationKind === powerbi.VisualDataChangeOperationKind.Append &&
-                    this.model.segment && this.model.cells.length <= previousCount) {
+                    this.model.segment && this.model.cells.length <= previousCount &&
+                    this.model.cells.filter(cell => cell.raw.state !== "unloaded" && cell.raw.state !== "absent").length <= previousObserved) {
                     this.fetchStopped = true;
+                    this.fetchNotice = "FetchStalled";
                 }
             }
             this.options = this.settings.analysisOptions();
@@ -133,8 +148,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         if (value === undefined) return this.t("State_absent");
         if (typeof value === "number" && !Number.isFinite(value)) return this.t("State_invalid");
         const format = percent ? "0.0%;-0.0%;0.0%" : override ?? (source ? valueFormatter.getFormatStringByColumn(source) : undefined);
+        const key = JSON.stringify([this.host.locale, format, typeof value, value]);
+        const cached = this.formatCache.get(key);
+        if (cached !== undefined) return cached;
         const formatted = valueFormatter.format(value, format, false, this.host.locale);
-        return formatted.length > 1024 ? `${formatted.slice(0, 1021)}...` : formatted;
+        const bounded = formatted.length > 1024 ? `${formatted.slice(0, 1021)}...` : formatted;
+        if (this.formatCache.size < MAX_CELLS && key.length <= 2048) this.formatCache.set(key, bounded);
+        return bounded;
     }
 
     private scalar(value: Scalar, percent = false, source = this.model.valueSource, format?: string): string {
@@ -161,19 +181,25 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
     private render(size: powerbi.IViewport): void {
         const focused = this.viewport.contains(document.activeElement);
+        const focusedAction = document.activeElement instanceof HTMLElement && this.root.contains(document.activeElement) ? document.activeElement.dataset.action : undefined;
+        const previousItem = this.items.find(item => item.row === this.active.row && item.column === this.active.column);
+        const activeKey = previousItem?.identity?.getKey();
+        const expanded = Array.from(this.footer.querySelectorAll("details[open]"), node => (node as HTMLElement).dataset.detail);
         const scrollTop = this.viewport.scrollTop;
         const scrollLeft = this.viewport.scrollLeft;
         const dimensions = this.settings.dimensions();
+        this.compact = size.height < 300 || size.width < 400;
         dimensions.label = Math.min(dimensions.label, Math.max(56, Math.floor(size.width * 0.4)));
         dimensions.width = Math.min(dimensions.width, Math.max(56, size.width - dimensions.label - 24));
         dimensions.height = Math.max(Math.ceil(dimensions.font * 1.35) + 8,
-            Math.min(dimensions.height, Math.max(28, Math.floor((size.height - 64) / 2))));
+            Math.min(dimensions.height, this.compact ? 28 : Math.max(28, Math.floor((size.height - 64) / 2))));
         this.highContrast = this.host.colorPalette.isHighContrast;
         this.rtl = /^(ar|fa|he|ur|ps|dv)(-|$)/i.test(this.host.locale) ||
             getComputedStyle(this.root.parentElement ?? this.root).direction === "rtl";
         const gridHeight = dimensions.height * 2 + 24;
         const tiny = size.width < 180 || size.height < 120 || gridHeight > size.height - 32;
         this.root.classList.toggle("tiny", tiny);
+        this.root.classList.toggle("compact", this.compact);
         this.root.classList.toggle("high-contrast", this.highContrast);
         this.root.dir = this.rtl ? "rtl" : "ltr";
         this.root.style.width = `${Math.max(0, size.width)}px`;
@@ -181,8 +207,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.root.style.fontSize = `${dimensions.font}px`;
         this.root.style.setProperty("--cell-height", `${dimensions.height}px`);
         const chromeHeight = Math.max(0, size.height - gridHeight);
-        this.heading.style.maxHeight = `${Math.min(size.height * 0.4, chromeHeight * 0.55)}px`;
-        this.footer.style.maxHeight = `${Math.min(size.height * 0.26, chromeHeight * 0.45)}px`;
+        const headingShare = this.compact && this.options.scope !== "global" ? 0.8 : 0.72;
+        this.heading.style.maxHeight = `${Math.min(size.height * 0.48, chromeHeight * headingShare)}px`;
+        this.footer.style.maxHeight = `${Math.min(size.height * 0.26, chromeHeight * (1 - headingShare))}px`;
         for (const property of ["--background", "--foreground", "--border", "--focus"]) this.root.style.removeProperty(property);
         if (this.highContrast) {
             this.root.style.setProperty("--background", this.host.colorPalette.background.value);
@@ -196,9 +223,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.columnLabels = this.model.columns.map(axis => this.format(axis.value, axis.source));
         this.renderHeading();
         this.renderFooter();
+        for (const detail of Array.from(this.footer.querySelectorAll("details"))) detail.open = expanded.includes(detail.dataset.detail);
         if (tiny || this.model.error || !this.model.rows.length || !this.model.columns.length) {
             const message = tiny ? this.t("Tiny") : this.model.error ? this.localizer.message(this.model.error) : this.t("Empty");
-            this.viewport.replaceChildren(element("div", "empty", message));
+            const empty = element("div", "empty", tiny ? this.t("TinyShort") : message);
+            empty.title = message;
+            empty.setAttribute("aria-label", message);
+            this.viewport.replaceChildren(empty);
             this.viewport.tabIndex = 0;
             return;
         }
@@ -265,9 +296,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
                         td.textContent = "";
                     }
                 }
-                td.setAttribute("aria-label", this.cellDescription(analyzed));
+                const description = this.cellDescription(analyzed);
+                td.setAttribute("aria-label", description);
                 // Native tooltips carry the same full text; a title also works when the host disables them.
-                td.title = this.cellDescription(analyzed);
+                td.title = description;
                 row.appendChild(td);
             }
             body.appendChild(row);
@@ -279,29 +311,43 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         }
         this.active.row = Math.min(this.active.row, this.model.rows.length);
         this.active.column = Math.min(this.active.column, this.model.columns.length);
+        if (activeKey) {
+            const retained = this.items.find(item => item.identity?.getKey() === activeKey);
+            this.active = retained ? { row: retained.row, column: retained.column } : { row: 1, column: 1 };
+        }
         this.setActive(this.active.row, this.active.column, false);
         this.viewport.scrollTop = scrollTop;
         this.viewport.scrollLeft = scrollLeft;
         this.paintSelections();
         if (focused) this.setActive(this.active.row, this.active.column, true);
+        if (focusedAction && this.root.contains(document.activeElement) === false) {
+            const button = Array.from(this.heading.querySelectorAll("button")).find(button => button.dataset.action === focusedAction && !button.disabled);
+            if (button) button.focus();
+            else this.setActive(this.active.row, this.active.column, true);
+        }
     }
 
     private renderHeading(): void {
         const toolbar = element("div", "toolbar");
         toolbar.appendChild(element("span", "title", this.model.valueSource?.displayName || this.t("Title")));
-        const clear = element("button", undefined, this.t("Clear"));
+        const clear = element("button", undefined, this.t(this.compact ? "ClearShort" : "Clear"));
+        clear.setAttribute("aria-label", this.t("Clear"));
         clear.type = "button";
         clear.dataset.action = "clear";
         toolbar.appendChild(clear);
         this.loadButton = undefined;
         if (this.model.segment && !this.model.limited && this.model.rows.length < MAX_ROWS && this.model.cells.length < MAX_CELLS) {
-            this.loadButton = element("button", undefined, this.t("LoadMore"));
+            this.loadButton = element("button", undefined, this.t(this.compact ? "LoadShort" : "LoadMore"));
+            this.loadButton.setAttribute("aria-label", this.t("LoadMore"));
             this.loadButton.type = "button";
             this.loadButton.dataset.action = "load";
             this.loadButton.disabled = this.pending || this.fetchStopped;
             toolbar.appendChild(this.loadButton);
         }
-        const semantics = element("div", "semantics", this.semantics());
+        const modes: Record<AnalysisOptions["normalization"], StringKey> = { raw: "Choice_Raw", row: "Choice_Row", column: "Choice_Column", all: "Choice_All", denominator: "CompactDenominator" };
+        const compactSemantics = `${this.t(modes[this.options.normalization])} | ${this.t(this.options.palette === "sequential" ? "Sequential" : "CompactDiverging")}`;
+        const semantics = element("div", "semantics", this.compact ? compactSemantics : this.semantics());
+        semantics.title = this.semantics();
         const legend = element("div", "legend");
         this.legendRamp.replaceChildren();
         for (let i = 0; i < 9; i++) {
@@ -312,8 +358,14 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             this.legendRamp.appendChild(swatch);
         }
         this.legendRamp.setAttribute("aria-hidden", "true");
+        this.legendRamp.style.width = this.compact ? "54px" : "90px";
         legend.append(this.legendRamp, this.scopeLabel);
         this.heading.replaceChildren(toolbar, semantics, legend);
+        if (this.options.scope !== "global") {
+            const warning = element("div", "scope-warning", this.t(this.compact ? "LocalWarningCompact" : "LocalWarning"));
+            warning.title = this.t("LocalWarning");
+            this.heading.appendChild(warning);
+        }
         const firstDomain = this.analysis.cells.find(cell => cell.domain)?.domain;
         this.updateLegend(firstDomain);
     }
@@ -325,26 +377,30 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             : undefined;
         const scale = this.options.palette === "sequential" ? this.t("Sequential") : this.t("Diverging");
         const bounds = domain ? `${this.format(domain.min, this.model.valueSource, this.options.normalization !== "raw")} .. ${this.format(domain.max, this.model.valueSource, this.options.normalization !== "raw")}` : this.t("NoDomain");
-        this.scopeLabel.textContent = `${this.t(scopeKey)} | ${scale} | ${group ? `${group}: ` : ""}${this.options.scope !== "global" && !group ? this.t("LocalDomain") : bounds}`;
+        const description = `${this.t(scopeKey)} | ${scale} | ${group ? `${group}: ` : ""}${this.options.scope !== "global" && !group ? this.t("LocalDomain") : bounds}`;
+        this.scopeLabel.textContent = this.compact ? `${this.t(scopeKey)} | ${bounds}` : description;
+        this.scopeLabel.title = description;
     }
 
     private renderFooter(): void {
-        this.status.textContent = this.model.error ? this.localizer.message(this.model.error) : (this.pending ? this.t("Loading") : this.fetchStopped ? this.t("FetchStalled")
+        this.status.textContent = this.model.error ? this.localizer.message(this.model.error) : (this.fetchNotice ? this.t(this.fetchNotice) : this.pending ? this.t("Loading") : this.fetchStopped ? this.t("FetchStalled")
             : this.model.partial ? this.t("Partial") : this.t("Complete"));
         this.footer.replaceChildren(this.status);
-        if (this.analysis.error) this.footer.appendChild(element("div", "notice", this.localizer.message(this.analysis.error)));
+        if (this.analysis.error && this.analysis.error !== this.model.error) this.footer.appendChild(element("div", "notice", this.localizer.message(this.analysis.error)));
         for (const notice of [...this.model.notices, ...this.analysis.notices]) {
             this.footer.appendChild(element("div", "notice", this.localizer.message(notice)));
         }
         this.footer.appendChild(element("div", "notice", this.t("Key")));
         const details = element("details");
+        details.dataset.detail = "help";
         details.appendChild(element("summary", undefined, this.t("Details")));
-        for (const text of [this.t("Help"), this.highContrast ? this.t("HighContrast") : "",
+        for (const text of [this.semantics(), this.options.scope !== "global" ? this.t("LocalDomain") : "", this.t("Help"), this.highContrast ? this.t("HighContrast") : "",
             this.model.hasHighlights ? this.t("Highlights") : ""]) {
             if (text) details.appendChild(element("div", "notice", text));
         }
         this.footer.appendChild(details);
         const legal = element("details");
+        legal.dataset.detail = "legal";
         legal.append(element("summary", undefined, this.t("ThirdParty")), element("pre", "legal", thirdParty.text));
         this.footer.appendChild(legal);
     }
@@ -415,7 +471,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         const item = this.findItem(event.target);
         if (!item) return;
         let { row, column } = item;
-        const page = Math.max(1, Math.floor(this.viewport.clientHeight / (this.settings.dimensions().height + 2)) - 1);
+        const rowHeight = this.items[0]?.element.getBoundingClientRect().height || this.settings.dimensions().height;
+        const page = Math.max(1, Math.floor(this.viewport.clientHeight / (rowHeight + 2)) - 1);
         switch (event.key) {
             case "ArrowUp": row--; break;
             case "ArrowDown": row++; break;
@@ -426,7 +483,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             case "PageUp": row -= page; break;
             case "PageDown": row += page; break;
             case "Enter":
-            case " ": this.select(item, event.ctrlKey || event.metaKey); event.preventDefault(); return;
+            case " ": if (!event.repeat) this.select(item, event.ctrlKey || event.metaKey); event.preventDefault(); return;
             case "ContextMenu": this.contextMenu(item); event.preventDefault(); return;
             case "F10":
                 if (event.shiftKey) { this.contextMenu(item); event.preventDefault(); }
@@ -482,29 +539,31 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         if (!this.interactionsAllowed()) return;
         if (!item.identity?.hasIdentity()) { this.report(this.t("NoSelection")); return; }
         const generation = this.generation;
-        Promise.resolve(this.selection.select(item.identity, multi)).then(() => {
+        const identity = item.identity;
+        Promise.resolve().then(() => this.selection.select(identity, multi)).then(() => {
             if (!this.destroyed && generation === this.generation) {
                 this.paintSelections();
                 this.live.textContent = this.t("Selected");
             }
-        }, () => { if (!this.destroyed) this.report(this.t("SelectionFailed")); });
+        }, () => { if (!this.destroyed && generation === this.generation) this.report(this.t("SelectionFailed")); });
     }
 
     private clear(): void {
         if (!this.interactionsAllowed()) return;
-        Promise.resolve(this.selection.clear()).then(() => {
-            if (!this.destroyed) {
+        const generation = this.generation;
+        Promise.resolve().then(() => this.selection.clear()).then(() => {
+            if (!this.destroyed && generation === this.generation) {
                 this.paintSelections();
                 this.live.textContent = this.t("Cleared");
             }
-        }, () => { if (!this.destroyed) this.report(this.t("SelectionFailed")); });
+        }, () => { if (!this.destroyed && generation === this.generation) this.report(this.t("SelectionFailed")); });
     }
 
     private paintSelections(): void {
         const selected = this.selection.getSelectionIds() as SelectionId[];
         for (const item of this.items) {
             const matches = !!item.identity && selected.some(id => id.includes(item.identity!));
-            item.element.setAttribute("aria-selected", String(matches));
+            if (item.element.getAttribute("aria-selected") !== String(matches)) item.element.setAttribute("aria-selected", String(matches));
             const highlighted = !!item.cell && item.cell.cell.highlight.state === "value";
             item.element.classList.toggle("highlighted", highlighted && this.model.hasHighlights);
             item.element.classList.toggle("dimmed", (!!item.cell && this.model.hasHighlights && !highlighted) ||
@@ -522,8 +581,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         if (item && (item.row || item.column) && !item.identity?.hasIdentity()) { this.report(this.t("NoSelection")); return; }
         const rect = (item?.element ?? this.viewport).getBoundingClientRect();
         const identity = item?.identity ?? this.host.createSelectionIdBuilder().createSelectionId();
-        Promise.resolve(this.selection.showContextMenu(identity, { x: x ?? rect.left + rect.width / 2, y: y ?? rect.top + rect.height / 2 }))
-            .then(undefined, () => { if (!this.destroyed) this.report(this.t("ContextFailed")); });
+        const generation = this.generation;
+        Promise.resolve().then(() => this.selection.showContextMenu(identity, { x: x ?? rect.left + rect.width / 2, y: y ?? rect.top + rect.height / 2 }))
+            .then(undefined, () => { if (!this.destroyed && generation === this.generation) this.report(this.t("ContextFailed")); });
     }
 
     private tooltipItems(item: GridItem): powerbi.extensibility.VisualTooltipDataItem[] {
@@ -535,18 +595,19 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             { displayName: this.model.valueSource?.displayName || this.t("Raw"), value: this.scalar(cell.raw, false, this.model.valueSource, cell.format) }
         ];
         if (this.options.normalization !== "raw") data.push({ displayName: this.t("Displayed"), value: this.scalar(item.cell.displayed, true) });
-        if (this.model.denominatorSource) data.push({ displayName: this.model.denominatorSource.displayName, value: this.scalar(cell.denominator, false, this.model.denominatorSource) });
+        if (this.model.denominatorSource) data.push({ displayName: this.model.denominatorSource.displayName, value: this.scalar(cell.denominator, false, this.model.denominatorSource, cell.denominatorFormat) });
         if (this.model.hasHighlights) data.push({ displayName: this.t("Highlight"), value: this.scalar(cell.highlight, false, this.model.valueSource, cell.format) });
         if (item.cell.domain) data.push({
             displayName: this.t("Scale"),
             value: `${this.format(item.cell.domain.min, this.model.valueSource, this.options.normalization !== "raw")} .. ${this.format(item.cell.domain.max, this.model.valueSource, this.options.normalization !== "raw")}`
         });
-        for (const tooltip of cell.tooltips) data.push({ displayName: tooltip.source.displayName, value: this.format(tooltip.value, tooltip.source) });
+        for (const tooltip of cell.tooltips) data.push({ displayName: tooltip.source.displayName, value: this.format(tooltip.value, tooltip.source, false, tooltip.format) });
         data.push({ displayName: this.t("Details"), value: this.semantics() });
         return data;
     }
 
     private readonly onPointerOver = (event: PointerEvent): void => {
+        if (event.pointerType === "touch") return;
         const item = this.findItem(event.target);
         if (!item?.cell) return;
         this.updateLegend(item.cell.domain, item);
@@ -558,6 +619,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     };
 
     private readonly onPointerMove = (event: PointerEvent): void => {
+        if (event.pointerType === "touch") return;
         const item = this.findItem(event.target);
         if (!item?.cell || !this.host.tooltipService.enabled()) return;
         this.host.tooltipService.move({
@@ -578,16 +640,31 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         if (this.pending || this.fetchStopped || !this.model.segment || this.model.limited ||
             this.model.rows.length >= MAX_ROWS || this.model.cells.length >= MAX_CELLS) return;
         this.pending = true;
+        this.fetchNotice = "Loading";
         if (this.loadButton) this.loadButton.disabled = true;
         this.report(this.t("Loading"));
-        if (!this.host.fetchMoreData(true)) {
+        let accepted: boolean;
+        try {
+            accepted = this.host.fetchMoreData(true);
+        } catch {
             this.pending = false;
             this.fetchStopped = true;
+            this.fetchNotice = "FetchFailed";
+            this.report(this.t("FetchFailed"));
+            return;
+        }
+        if (!accepted) {
+            this.pending = false;
+            this.fetchStopped = true;
+            this.fetchNotice = "FetchRejected";
             this.report(this.t("FetchRejected"));
             return;
         }
         this.fetchTimer = setTimeout(() => {
-            if (!this.destroyed && this.pending) this.report(this.t("FetchPending"));
+            if (!this.destroyed && this.pending) {
+                this.fetchNotice = "FetchPending";
+                this.report(this.t("FetchPending"));
+            }
         }, 15000);
     }
 
@@ -609,6 +686,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.root.removeEventListener("focusin", this.onFocus);
         this.viewport.removeEventListener("scroll", this.hideTooltip);
         this.items = [];
+        this.formatCache.clear();
         this.root.remove();
     }
 }

@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { Script } from "node:vm";
 import { fileURLToPath } from "node:url";
-import { guid, packagePath, readPackage } from "./package-payload.mjs";
+import { guid, version, packagePath, readPackage } from "./package-payload.mjs";
 
 const { bytes, zip, manifest, resource } = await readPackage();
 const config = JSON.parse(readFileSync(new URL("../pbiviz.json", import.meta.url), "utf8"));
@@ -11,7 +11,7 @@ const capabilities = JSON.parse(readFileSync(new URL("../capabilities.json", imp
 const strings = JSON.parse(readFileSync(new URL("../src/strings.json", import.meta.url), "utf8"));
 assert.equal(config.visual.guid, guid, "The release GUID is frozen");
 assert.equal(resource.visual.guid, guid);
-assert.equal(resource.visual.version, "1.0.0.0");
+assert.equal(resource.visual.version, version);
 assert.equal(resource.visual.displayName, "Atlyn Heatmap");
 assert.equal(resource.apiVersion, "5.11.0");
 assert.equal(resource.author.name, "Atlyn");
@@ -23,7 +23,7 @@ assert.deepEqual(resource.stringResources["en-US"], strings);
 assert.deepEqual(JSON.parse(readFileSync(new URL("../stringResources/en-US/resources.resjson", import.meta.url), "utf8")), strings);
 assert.deepEqual(manifest.visual, resource.visual);
 assert.deepEqual(manifest.author, resource.author);
-assert.equal(manifest.version, "1.0.0.0");
+assert.equal(manifest.version, version);
 assert.deepEqual(manifest.resources, [{ resourceId: "rId0", sourceType: 5, file: `resources/${guid}.pbiviz.json` }]);
 assert.equal(manifest.metadata.pbivizjson.resourceId, "rId0");
 assert.equal(capabilities.supportsMultiVisualSelection, true);
@@ -50,8 +50,11 @@ const icon = Buffer.from(resource.content.iconBase64.replace(/^data:image\/png;b
 assert.equal(icon.readUInt32BE(16), 20);
 assert.equal(icon.readUInt32BE(20), 20);
 assert.deepEqual(icon, readFileSync(new URL("../assets/icon.png", import.meta.url)));
+const listingIcon = readFileSync(new URL("../assets/icon300.png", import.meta.url));
+assert.equal(listingIcon.readUInt32BE(16), 300);
+assert.equal(listingIcon.readUInt32BE(20), 300);
 const hash = createHash("sha256").update(bytes).digest("hex");
-writeFileSync(new URL("../dist/SHA256SUMS", import.meta.url), `${hash}  ${guid}.1.0.0.0.pbiviz\n`);
+writeFileSync(new URL("../dist/SHA256SUMS", import.meta.url), `${hash}  ${guid}.${version}.pbiviz\n`);
 console.log(JSON.stringify({
     package: fileURLToPath(packagePath), guid, version: resource.visual.version, apiVersion: resource.apiVersion,
     bytes: bytes.length, jsBytes: Buffer.byteLength(resource.content.js), cssBytes: Buffer.byteLength(resource.content.css),

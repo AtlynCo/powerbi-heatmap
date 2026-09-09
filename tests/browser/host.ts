@@ -13,19 +13,24 @@ export interface HarnessState {
     fetchCalls: boolean[];
     fetchAccepted: boolean;
     selectionRejected: boolean;
+    fetchThrows: boolean;
+    contextThrows: boolean;
+    selectionThrows: boolean;
 }
 
 export interface HarnessWindow extends Window {
     powerbi: { visuals: { plugins: Record<string, { create(options: powerbi.extensibility.visual.VisualConstructorOptions): Visual }> } };
     heatmap: { visual: Visual; host: Host; state: HarnessState; incoming(keys: string[]): void };
+    heatmaps: Record<string, HarnessWindow["heatmap"]>;
 }
 
 // This function is serialized into Chromium. It models the host API, not Power BI itself.
-export function installHost(config: { guid: string; locale: string; highContrast: boolean; interactions: boolean }): void {
+export function installHost(config: { guid: string; locale: string; highContrast: boolean; interactions: boolean; rootId?: string }): void {
     const target = window as unknown as HarnessWindow;
     const state: HarnessState = {
         selections: [], selectionCalls: [], contextCalls: [], tooltipCalls: [], lifecycle: [],
-        fetchCalls: [], fetchAccepted: true, selectionRejected: false
+        fetchCalls: [], fetchAccepted: true, selectionRejected: false,
+        fetchThrows: false, contextThrows: false, selectionThrows: false
     };
     let selected: Id[] = [];
     let onSelect: (ids: Id[]) => void = () => undefined;
@@ -56,20 +61,24 @@ export function installHost(config: { guid: string; locale: string; highContrast
         return result;
     }
     const manager = {
-        async select(ids: Id | Id[], multi?: boolean) {
-            if (state.selectionRejected) throw new Error("Host rejected selection");
+        select(ids: Id | Id[], multi?: boolean) {
+            if (state.selectionThrows) throw new Error("Host threw during selection");
+            if (state.selectionRejected) return Promise.reject(new Error("Host rejected selection"));
             const list = Array.isArray(ids) ? ids : [ids];
             state.selectionCalls.push({ key: list[0].getKey(), multi: !!multi });
             selected = multi ? [...selected, ...list] : list;
             state.selections = selected.map(id => id.getKey());
             onSelect(selected);
-            return selected;
+            return Promise.resolve(selected);
         },
         async clear() { selected = []; state.selections = []; onSelect([]); return {}; },
         getSelectionIds: () => selected,
         hasSelection: () => selected.length > 0,
         registerOnSelectCallback: (callback: (ids: Id[]) => void) => { onSelect = callback; },
-        async showContextMenu(id: Id, position: { x: number; y: number }) { state.contextCalls.push({ key: id.getKey(), ...position }); return {}; },
+        showContextMenu(id: Id, position: { x: number; y: number }) {
+            if (state.contextThrows) throw new Error("Host threw during context menu");
+            state.contextCalls.push({ key: id.getKey(), ...position }); return Promise.resolve({});
+        },
         async toggleExpandCollapse() { throw new Error("No hierarchy expansion in v1"); }
     };
     const foreground = { value: "#ffff00" };
@@ -96,17 +105,23 @@ export function installHost(config: { guid: string; locale: string; highContrast
             renderingFinished: () => state.lifecycle.push("finished"),
             renderingFailed: (_options: unknown, reason?: string) => state.lifecycle.push(`failed: ${reason}`)
         },
-        fetchMoreData: (aggregate = true) => { state.fetchCalls.push(aggregate); return state.fetchAccepted; }
+        fetchMoreData: (aggregate = true) => {
+            if (state.fetchThrows) throw new Error("Host threw during fetch");
+            state.fetchCalls.push(aggregate); return state.fetchAccepted;
+        }
     };
     // This partial mock uses native promises in place of the host's legacy IPromise type.
     const typedHost = host as unknown as Host;
     const plugin = target.powerbi.visuals.plugins[config.guid];
     if (!plugin) throw new Error(`Packaged plugin ${config.guid} was not registered`);
-    const root = document.getElementById("visual");
+    const root = document.getElementById(config.rootId || "visual");
     if (!root) throw new Error("Missing visual root");
     const visual = plugin.create({ element: root, host: typedHost });
-    target.heatmap = {
+    const instance = {
         visual, host: typedHost, state,
-        incoming(keys) { selected = keys.map(identity); state.selections = keys; onSelect(selected); }
+        incoming(keys: string[]) { selected = keys.map(identity); state.selections = keys; onSelect(selected); }
     };
+    target.heatmaps ??= {};
+    target.heatmaps[config.rootId || "visual"] = instance;
+    if (!config.rootId || config.rootId === "visual") target.heatmap = instance;
 }

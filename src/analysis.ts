@@ -17,6 +17,16 @@ const unavailable = (): Scalar => ({ state: "unavailable" });
 const groupIndex = (cell: Cell, scope: ScaleScope | Normalization): number =>
     scope === "row" ? cell.row : scope === "column" ? cell.column : 0;
 
+interface Sum { value: number; correction: number; }
+function add(sum: Sum, value: number): void {
+    if (!Number.isFinite(sum.value)) return;
+    const next = sum.value + value;
+    if (Number.isFinite(next)) {
+        sum.correction += sum.value >= value ? (sum.value - next) + value : (value - next) + sum.value;
+    } else sum.correction = 0;
+    sum.value = next;
+}
+
 export function analyze(model: Model, options: AnalysisOptions): Analysis {
     const result: Analysis = {
         cells: model.cells.map(cell => ({ cell, displayed: cell.raw })),
@@ -53,12 +63,12 @@ export function analyze(model: Model, options: AnalysisOptions): Analysis {
     } else if (options.normalization !== "raw") {
         if (!options.additive) return block("Share normalization requires explicit confirmation that Value is additive. Rates and ratios must not be summed.");
         result.notices.push("Share normalization supports only nonnegative additive values. BLANK and absent intersections are excluded, not treated as zero.");
-        const groups = new Map<number, { max: number; scaledSum: number; invalid: boolean }>();
+        const groups = new Map<number, { max: number; sum: Sum; scaledSum: Sum; invalid: boolean }>();
         for (const item of result.cells) {
             const key = groupIndex(item.cell, options.normalization);
             let group = groups.get(key);
             if (!group) {
-                group = { max: 0, scaledSum: 0, invalid: false };
+                group = { max: 0, sum: { value: 0, correction: 0 }, scaledSum: { value: 0, correction: 0 }, invalid: false };
                 groups.set(key, group);
             }
             const value = item.cell.raw;
@@ -67,11 +77,12 @@ export function analyze(model: Model, options: AnalysisOptions): Analysis {
                 else group.max = Math.max(group.max, value.value);
             } else if (value.state !== "blank" && value.state !== "absent") group.invalid = true;
         }
-        // Scale before summing so even MAX_VALUE + MAX_VALUE yields honest finite shares.
+        // Compensate small contributions; keep a scaled fallback for overflowing totals.
         for (const item of result.cells) {
             const group = groups.get(groupIndex(item.cell, options.normalization))!;
             if (!group.invalid && group.max > 0 && item.cell.raw.state === "value") {
-                group.scaledSum += item.cell.raw.value! / group.max;
+                add(group.sum, item.cell.raw.value!);
+                add(group.scaledSum, item.cell.raw.value! / group.max);
             }
         }
         let blockedGroup = false;
@@ -82,11 +93,15 @@ export function analyze(model: Model, options: AnalysisOptions): Analysis {
                 item.displayed = item.cell.raw.state === "value" ? unavailable() : item.cell.raw;
                 blockedGroup = true;
             } else if (item.cell.raw.state === "value") {
-                if (group.max === 0 || group.scaledSum === 0 || !Number.isFinite(group.scaledSum)) {
+                const scaledTotal = group.scaledSum.value + group.scaledSum.correction;
+                const total = group.sum.value + group.sum.correction;
+                if (group.max === 0 || scaledTotal === 0 || !Number.isFinite(scaledTotal)) {
                     item.displayed = unavailable();
                     zeroGroup = true;
                 } else {
-                    item.displayed = { state: "value", value: (item.cell.raw.value! / group.max) / group.scaledSum };
+                    // One division avoids double-rounding representable subnormal shares to zero.
+                    item.displayed = { state: "value", value: Number.isFinite(total)
+                        ? item.cell.raw.value! / total : (item.cell.raw.value! / group.max) / scaledTotal };
                 }
             }
         }
@@ -137,9 +152,14 @@ export function colorFor(value: number, domain: Domain, palette: Palette): strin
     }
     let fraction = 0.5;
     if (domain.min !== domain.max) {
-        const scale = Math.max(Math.abs(domain.min), Math.abs(domain.max));
-        fraction = (value / scale - domain.min / scale) / (domain.max / scale - domain.min / scale);
-        fraction = Math.min(1, Math.max(0, fraction));
+        if (value <= domain.min) fraction = 0;
+        else if (value >= domain.max) fraction = 1;
+        else {
+            const range = domain.max - domain.min;
+            // Subtract before scaling to preserve close endpoints; halve only an overflowing range.
+            fraction = Number.isFinite(range) ? (value - domain.min) / range
+                : (value / 2 - domain.min / 2) / (domain.max / 2 - domain.min / 2);
+        }
     }
     return mix(light, blue, fraction);
 }
