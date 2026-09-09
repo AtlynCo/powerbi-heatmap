@@ -1,0 +1,12 @@
+Defect,DefectSort,Line,LineSort,Defects,Opportunities
+Scratch,10,Line B,10,0,200
+Scratch,10,Line A,20,8,160
+Scratch,10,Line C,30,3,100
+Dent,20,Line B,10,6,200
+Dent,20,Line A,20,,160
+Dent,20,Line C,30,1,100
+Seal,30,Line B,10,4,200
+Seal,30,Line A,20,2,160
+Seal,30,Line C,30,0,100
+Label,40,Line B,10,2,200
+Label,40,Line A,20,4,160

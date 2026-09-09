@@ -1,0 +1,28 @@
+// Create each definition separately as a measure in DefectLine.
+// Counts are nonnegative additive in this synthetic defect-event dataset.
+// Model format: #,0
+Defect Count =
+    SUM ( DefectLine[Defects] )
+
+// Opportunities are repeated at each recorded defect for the same line.
+// Remove Defect dimension filters, then count the shared exposure once per
+// line. MAX is valid ONLY because every record for a line repeats its one
+// opportunity count. SUMX also makes a multiple-line model total meaningful.
+// Model format: #,0
+Line Inspection Opportunities =
+    CALCULATE (
+        SUMX (
+            VALUES ( 'Line'[Line] ),
+            CALCULATE ( MAX ( DefectLine[Opportunities] ) )
+        ),
+        REMOVEFILTERS ( 'Defect' )
+    )
+
+// Optional tooltip measure; model format: #,0
+Defect Records =
+    COUNTROWS ( DefectLine )
+
+// Optional model-authored ratio for comparison; model format: 0.0%
+// Do not sum this ratio or assert that it is an additive measure.
+Defects Per Opportunity =
+    DIVIDE ( [Defect Count], [Line Inspection Opportunities] )

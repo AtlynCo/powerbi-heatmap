@@ -1,0 +1,23 @@
+// Create each definition separately as a measure in ProductRegion.
+// Revenue is nonnegative additive synthetic sales. Do not use COALESCE:
+// the explicit blank observation must remain BLANK rather than zero.
+// Model format for both revenue measures: $#,0;($#,0);$0
+Total Revenue =
+    SUM ( ProductRegion[Revenue] )
+
+// Remove the entire Region dimension, including RegionSort and slicers.
+// Product and other applicable model filters remain in effect.
+Product Revenue Across Regions =
+    CALCULATE (
+        [Total Revenue],
+        REMOVEFILTERS ( 'Region' )
+    )
+
+// Optional tooltip measure; model format: #,0
+Revenue Records =
+    COUNTROWS ( ProductRegion )
+
+// Optional model-authored ratio for comparison; model format: 0.0%
+// Use as Value only in raw mode, with the additive author toggle OFF.
+Revenue Share Across Regions =
+    DIVIDE ( [Total Revenue], [Product Revenue Across Regions] )

@@ -1,0 +1,9 @@
+node_modules/
+.tmp/
+dist/
+test-results/
+playwright-report/
+*.log
+*.pfx
+*.pem
+.DS_Store

@@ -1,0 +1,20 @@
+{
+  "visual": {
+    "name": "atlynHeatmap",
+    "displayName": "Atlyn Heatmap",
+    "guid": "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37",
+    "visualClassName": "Visual",
+    "version": "1.0.0.0",
+    "description": "A general row-by-column analytical heatmap with explicit color scales, safe optional shares, and model-backed selections.",
+    "supportUrl": "https://www.atlynco.com/docs/faq",
+    "gitHubUrl": "https://github.com/AtlynCo/powerbi-heatmap"
+  },
+  "apiVersion": "5.11.0",
+  "author": { "name": "Atlyn", "email": "atlyn.help@gmail.com" },
+  "assets": { "icon": "assets/icon.png" },
+  "externalJS": null,
+  "style": "style/visual.less",
+  "capabilities": "capabilities.json",
+  "dependencies": null,
+  "stringResources": []
+}
