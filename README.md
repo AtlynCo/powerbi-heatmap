@@ -59,7 +59,7 @@ Below 180 × 120 pixels, enlarge the visual; very large fonts can require more s
 - Product × region revenue, including zero, BLANK, and an absent intersection.
 - Defect × production line counts with explicit inspection-opportunity denominators.
 
-`npm run sample` prepares the authored, bound offline PBIP described in [samples/PBIP.md](samples/PBIP.md), embedding the exact built visual. Native Desktop opening/refresh and conversion to the required real PBIX remain coordinator-owned gates. No fabricated PBIX is supplied. The visual itself makes no runtime network calls and uses no runtime external assets.
+`npm run sample` prepares the authored, bound offline PBIP described in [samples/PBIP.md](samples/PBIP.md), embedding the exact built visual. On September 10, 2026, the coordinator reported successful Desktop open/refresh, cross-filtering, Save PBIX and reopen with exact embedded-package proof. Final native assets are still forthcoming for this repository/dossier; see the [attributed status and remaining gates](docs/VALIDATION.md#coordinator-reported-native-status-september-10-2026). No fabricated PBIX is supplied. The visual itself makes no runtime network calls and uses no runtime external assets.
 
 ## Development and verification
 
@@ -111,6 +111,14 @@ Development-dependency mitigations pin `qs` to `6.16.0` and scope `uuid` `11.1.1
 
 One visual; empty privileges; no telemetry, backend, license service, runtime network access, external runtime assets, `eval`, or unsafe HTML. English resources use the host localization manager. This is not statistical correlation, clustering, a calendar, writeback, or a spreadsheet editor.
 
+### Commercial acquisition and shared viewing
+
+Owner-approved model (September 10, 2026): **storefront subscriptions, ungated visuals**. Commercial acquisition uses existing Atlyn storefront subscriptions. The visual remains fully ungated in Power BI, with free shared viewing and no viewer subscription check. It does not verify author purchases or enforce author entitlements; report access still follows Power BI and tenant policies.
+
+The existing offline renderer is the intended runtime, not an interim build awaiting paid integration. Do not add license checks, signers/keys, AAD/API integration, feature gates, or runtime requests for this commercial model. The optional Microsoft Power BI certified badge is a separate review target, not a requirement for rendering or evidence of approval.
+
 Original Atlyn work is **all rights reserved**; see [LICENSE](LICENSE). Third-party components retain their own terms, including MIT scaffold attribution in generated [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). These full notices also ship inside the visual under **Third-party licenses**, without requiring an external license sidecar.
+
+The private package's existing license identifier is `UNLICENSED`; `LICENSE` makes no additional license grant and does not offer the original source/docs/assets under an open-source license. Ungated rendering and free shared viewing do not relicense that work. This documentation does not replace existing storefront/customer terms or invent prices, trials, distribution rights, or a new EULA.
 
 Author: **Atlyn**, [atlyn.help@gmail.com](mailto:atlyn.help@gmail.com). Support: <https://www.atlynco.com/docs/faq>. Private source: <https://github.com/AtlynCo/powerbi-heatmap>. These contact/repository details are product metadata, not evidence of support responsiveness. See [submission preparation](docs/SUBMISSION.md); this repository does not claim publication, a Partner Center submission, a public release, or Microsoft certification.
