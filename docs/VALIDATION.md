@@ -87,7 +87,7 @@ The parent coordinator reports successful native Heatmap Desktop open/refresh, c
 
 Final native assets, tester/host metadata and the PBIX/proof files are forthcoming for this source/dossier. No new captures or PBIX are fabricated here, and the report does not close broader native gates before evidence is attached and reviewed. The sealed local evidence bundle is unchanged.
 
-The owner also approved **existing Atlyn storefront subscriptions with ungated runtime and free shared viewing**. The current offline renderer is intended; runtime licensing integration is no longer a blocker. This documentation-only update changes no runtime bytes or version. The optional certification badge, certification-ref movement, remote main and live submission remain subject to the coordinator's final gate.
+The owner also approved **existing Atlyn storefront subscriptions with ungated runtime and free shared viewing**. The current offline renderer is intended; runtime licensing integration is no longer a blocker. This documentation-only update changes no runtime bytes or version. Official Microsoft Power BI certification is owner-required in addition to general Marketplace review: the coordinator must select **Request Power BI certification** during authorized submission. The actual grant is pending, not claimed. Certification-ref movement, remote main and live submission remain subject to the coordinator's final gate.
 
 ## Native/publication gates still open
 

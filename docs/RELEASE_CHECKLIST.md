@@ -4,7 +4,7 @@ Unchecked boxes are **unverified blockers** until supported by dated evidence fo
 
 Record automated outcomes in [VALIDATION.md](VALIDATION.md), including failures and environmental limitations. For manual evidence, record tester, date, Desktop/Service/browser version, OS, locale, tenant settings, candidate version/hash, source report, expected result, actual result, and evidence location. Do not capture customer data.
 
-Owner-approved commercial model (September 10, 2026): existing Atlyn storefront subscriptions, ungated runtime and free shared viewing, with no author-entitlement enforcement. Runtime licensing integration is not a gate. Preserve existing first-party/third-party terms and the offline runtime; see [SUBMISSION.md](SUBMISSION.md). The optional certification badge is not claimed. Main, certification-ref movement and submission remain coordinator-held.
+Owner-approved commercial model (September 10, 2026): existing Atlyn storefront subscriptions, ungated runtime and free shared viewing, with no author-entitlement enforcement. Runtime licensing integration is not a gate. Preserve existing first-party/third-party terms and the offline runtime; see [SUBMISSION.md](SUBMISSION.md). Official Microsoft Power BI certification is owner-required in addition to general Marketplace review; the actual grant remains pending and no badge is claimed. Main, certification-ref movement and submission remain coordinator-held.
 
 The coordinator reports native Desktop open/refresh, cross-filtering, Save PBIX and reopen with exact embedded-package proof; final assets are forthcoming. Record that narrow [attributed status](VALIDATION.md#coordinator-reported-native-status-september-10-2026) without checking off broader cases before their evidence is reviewed.
 
@@ -73,3 +73,4 @@ The coordinator reports native Desktop open/refresh, cross-filtering, Save PBIX 
 - [ ] Open and refresh the generated bound offline PBIP, inspect its exact embedded package, and save a genuine PBIX. Do not equate schema/reference checks with successful Desktop loading.
 - [ ] Verify support link ownership/availability, mailbox delivery, and actual support responsiveness. Metadata alone is insufficient.
 - [ ] Complete [SUBMISSION.md](SUBMISSION.md) evidence/permission TODOs. Microsoft certification is **not claimed** and remains a separate Microsoft process.
+- [ ] During authorized submission, the coordinator must select **Request Power BI certification** to satisfy the owner's required additional official review. Retain evidence of the selection, submission ID and certification-review status; general Marketplace review alone does not satisfy this requirement, and submission is not a certification grant.

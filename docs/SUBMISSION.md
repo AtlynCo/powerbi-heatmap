@@ -12,7 +12,7 @@ Proposed purchase disclosure: "Available through existing Atlyn storefront subsc
 
 The existing private npm license identifier is `UNLICENSED`. [LICENSE](../LICENSE) states "Copyright (c) 2026 Atlyn. All rights reserved.", says the original source, documentation and assets are not offered under an open-source license, and makes no additional license grant. Third-party terms remain separate. No first-party relicensing or new customer EULA is part of this decision.
 
-The optional Microsoft Power BI certified badge remains a target subject to Microsoft review, not an awarded status. Remote `main`, certification-ref changes and submission remain held for the coordinator's final gate.
+Official Microsoft Power BI certification is **owner-required**, in addition to general Marketplace review. The coordinator must select **Request Power BI certification** during authorized submission and retain evidence of that selection and the review status. Microsoft's actual certification grant is pending; no certified badge or approval is claimed. Remote `main`, certification-ref changes and submission remain held for the coordinator's final gate.
 
 ## Fixed identity
 
@@ -92,7 +92,7 @@ The freeze script requires a clean committed source tree, copies package/assets/
 | Support URL and mailbox | Verify control, reachability and response process; no fabricated support SLA |
 | Private source access | Authorized coordinator grants Microsoft's requested reviewer access through the official process; do not make the repository public or create credentials |
 | Legal distribution authority | Owner confirms Atlyn original-work rights and third-party redistribution compliance |
-| Final review and publication controls | Coordinator supplies native results/PBIX, reviews listing/media, submits for Microsoft review, and records submission ID/status |
+| Final review and publication controls | Coordinator supplies native results/PBIX, reviews listing/media, selects **Request Power BI certification** during authorized submission in addition to general Marketplace review, and records the selection, submission ID and certification-review status. Actual certification grant remains pending |
 
 ## Current official requirements reviewed
 

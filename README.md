@@ -115,7 +115,7 @@ One visual; empty privileges; no telemetry, backend, license service, runtime ne
 
 Owner-approved model (September 10, 2026): **storefront subscriptions, ungated visuals**. Commercial acquisition uses existing Atlyn storefront subscriptions. The visual remains fully ungated in Power BI, with free shared viewing and no viewer subscription check. It does not verify author purchases or enforce author entitlements; report access still follows Power BI and tenant policies.
 
-The existing offline renderer is the intended runtime, not an interim build awaiting paid integration. Do not add license checks, signers/keys, AAD/API integration, feature gates, or runtime requests for this commercial model. The optional Microsoft Power BI certified badge is a separate review target, not a requirement for rendering or evidence of approval.
+The existing offline renderer is the intended runtime, not an interim build awaiting paid integration. Do not add license checks, signers/keys, AAD/API integration, feature gates, or runtime requests for this commercial model. The owner requires official Microsoft Power BI certification in addition to general Marketplace review. During authorized submission, the coordinator must select **Request Power BI certification**. Microsoft's actual grant is pending; no certified badge or approval is claimed, and rendering remains ungated.
 
 Original Atlyn work is **all rights reserved**; see [LICENSE](LICENSE). Third-party components retain their own terms, including MIT scaffold attribution in generated [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). These full notices also ship inside the visual under **Third-party licenses**, without requiring an external license sidecar.
 
