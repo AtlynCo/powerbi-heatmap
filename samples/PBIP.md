@@ -2,7 +2,7 @@
 
 The authored generator builds **AtlynHeatmapSample.pbip**, an enhanced PBIR report, a TMDL semantic model, and the **private visual extracted byte-for-byte from the official release package**. It is not an empty report or a manual field-binding recipe. All five pages already contain bound Atlyn Heatmap queries, persisted settings, a native Power BI matrix, and two dimension slicers.
 
-**This is a source-generated project, not a native-validated report or a PBIX.** Microsoft JSON Schema and static/reference checks can pass without Desktop accepting or rendering the project. Native open, refresh, interactions, accessibility, and genuine Desktop Save As/export to PBIX remain a release hold. No Desktop, service, browser session, or tenant has been used to validate this sample.
+**This generator produces source, not a PBIX or native-test evidence.** Microsoft JSON Schema and static/reference checks can pass without Desktop accepting or rendering the project. On September 10, 2026, the coordinator reported successful Desktop open/refresh, cross-filtering, Save PBIX and reopen with exact embedded-package proof. Final native assets are forthcoming for the repository/dossier; see the [attributed status and remaining gates](../docs/VALIDATION.md#coordinator-reported-native-status-september-10-2026). This child did not operate Desktop, Service or a shared browser, and does not infer other native outcomes from the report.
 
 ## Build after the final package is frozen
 

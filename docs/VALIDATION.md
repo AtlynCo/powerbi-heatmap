@@ -20,7 +20,7 @@ The sample stage authors five bound pages/six heatmaps with native matrices and 
 | Actual packaged Chromium regressions and screenshots | 22 passed |
 | Full / production dependency audits | Zero reported vulnerabilities in both |
 | Bound offline sample generation / validation | 61 files, five pages, six heatmaps; 47 JSON documents / 13 pinned schemas passed |
-| Native Power BI / PBIX / Marketplace certification | Not run or claimed; coordinator-owned holds |
+| Native Power BI / PBIX / Marketplace certification | Not performed by this local runner; subsequent coordinator-reported status is recorded below |
 
 Run performance separately, without builds or other stress work in this checkout:
 
@@ -81,6 +81,14 @@ Official tools 7.2.1 / API npm package 5.11.1 (host API 5.11.0) were current whe
 
 Audit checks cover archive metadata, frozen GUID/version, icon, capabilities/empty privileges, English UI resources, embedded full third-party notices, syntax/forbidden runtime patterns, and package hash. Official audit checks external requests; browser request observers add dynamic evidence for tested paths. These are bounded checks, not a proof about every possible host input. Full and production dependency audits are separate and time-sensitive. The SDK's optional Landing Page/Total-Subtotal recommendations are disclosed; v1 has binding guidance and intentionally no displayed totals.
 
+## Coordinator-reported native status: September 10, 2026
+
+The parent coordinator reports successful native Heatmap Desktop open/refresh, cross-filtering, Save PBIX and reopen, with exact embedded-package proof. This is an attributed native report, not an inference from the local browser suite or TOM parsing. The package remains `1.0.1.0`, SHA-256 `95ecfae70676f40aa83e2c058fa2142de906333165f8c7a9a8a750a66dfbec8d`.
+
+Final native assets, tester/host metadata and the PBIX/proof files are forthcoming for this source/dossier. No new captures or PBIX are fabricated here, and the report does not close broader native gates before evidence is attached and reviewed. The sealed local evidence bundle is unchanged.
+
+The owner also approved **existing Atlyn storefront subscriptions with ungated runtime and free shared viewing**. The current offline renderer is intended; runtime licensing integration is no longer a blocker. This documentation-only update changes no runtime bytes or version. Official Microsoft Power BI certification is owner-required in addition to general Marketplace review: the coordinator must select **Request Power BI certification** during authorized submission. The actual grant is pending, not claimed. Certification-ref movement, remote main and live submission remain subject to the coordinator's final gate.
+
 ## Native/publication gates still open
 
-No Desktop/Service import/save/reopen, actual PBIP refresh, real PBIX conversion, Microsoft test-dataset report execution, screen-reader/mobile testing, dashboard pin, host sorting/dynamic formats, cross-visual filtering, real segmented delivery, bookmarks, or PDF/PowerPoint/image export is claimed here. Multiple-instance and settings-replay mocks are not saved-report/native bookmark proof. Parent owns these checks and all live Partner Center actions. See [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) and [SUBMISSION.md](SUBMISSION.md). Do not mark any such gate complete without dated evidence for the frozen package.
+The reported Desktop results above do not establish Service behavior, Microsoft test-dataset report execution, screen-reader/mobile testing, dashboard pin, host sorting/dynamic formats, all selection/highlight modes, real segmented delivery, bookmarks, or PDF/PowerPoint/image export. Multiple-instance and settings-replay mocks are not saved-report/native bookmark proof. Parent owns these checks and all live Partner Center actions. See [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) and [SUBMISSION.md](SUBMISSION.md). Do not mark any such gate complete without dated evidence for the exact package.

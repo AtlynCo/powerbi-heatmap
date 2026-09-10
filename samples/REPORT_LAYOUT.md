@@ -1,6 +1,6 @@
 # Offline report layout recipe
 
-This is the optional manual assembly recipe after [importing the sample queries and measures](README.md), not a PBIP definition itself. Prefer the separately supplied [bound offline PBIP generator](PBIP.md) to avoid manual field binding. Neither route claims successful native-host testing.
+This is the optional manual assembly recipe after [importing the sample queries and measures](README.md), not a PBIP definition itself. Prefer the separately supplied [bound offline PBIP generator](PBIP.md) to avoid manual field binding. This recipe is not test evidence; the coordinator-reported Desktop outcomes and remaining gates for the generated sample are [tracked separately](../docs/VALIDATION.md#coordinator-reported-native-status-september-10-2026).
 
 Use a 1280 × 720 page canvas. Suggested coordinates and sizes are in canvas pixels; adjust for the host's formatting UI. Import the local `.pbiviz` once, then reuse that one visual type across pages.
 
