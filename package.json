@@ -29,7 +29,8 @@
     "audit:package": "node scripts/audit-package.mjs",
     "audit:dependencies": "npm audit --omit=dev",
     "notices": "node scripts/notices.mjs",
-    "validate": "npm run typecheck && npm run lint && npm test && npm run package && npm run audit:package && npm run test:browser"
+    "validate": "npm run typecheck && npm run lint && npm test && npm run package && npm run audit:package && npm run test:browser",
+    "postinstall": "node scripts/patch-loader.mjs"
   },
   "overrides": {
     "qs": "6.16.0",

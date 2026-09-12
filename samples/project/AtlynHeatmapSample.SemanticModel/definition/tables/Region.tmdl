@@ -1,0 +1,28 @@
+table 'Region'
+
+	column 'Region'
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Region
+		sortByColumn: 'RegionSort'
+
+	column 'RegionSort'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: RegionSort
+
+	partition 'Region' = m
+		mode: import
+		source =
+			let
+				Source = #table(type table [Region = text, RegionSort = nullable number], {
+					{"North", 10},
+					{"West", 20},
+					{"Central", 30},
+					{"East", 40}
+				}),
+				Typed = Table.TransformColumnTypes(Source, {{"Region", type text}, {"RegionSort", Int64.Type}}, "en-US")
+			in
+				Typed

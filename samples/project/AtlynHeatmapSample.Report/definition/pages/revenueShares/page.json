@@ -1,0 +1,110 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/1.3.0/schema.json",
+  "name": "revenueShares",
+  "displayName": "02 Revenue - row shares",
+  "displayOption": "FitToPage",
+  "width": 1280,
+  "height": 900,
+  "visualInteractions": [
+    {
+      "source": "revenueShareGlobal",
+      "target": "revenueShareRow",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueShareGlobal",
+      "target": "revenueSharesCompanion",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueShareGlobal",
+      "target": "revenueSharesProductSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueShareGlobal",
+      "target": "revenueSharesRegionSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueShareRow",
+      "target": "revenueShareGlobal",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueShareRow",
+      "target": "revenueSharesCompanion",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueShareRow",
+      "target": "revenueSharesProductSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueShareRow",
+      "target": "revenueSharesRegionSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesCompanion",
+      "target": "revenueShareGlobal",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesCompanion",
+      "target": "revenueShareRow",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesCompanion",
+      "target": "revenueSharesProductSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesCompanion",
+      "target": "revenueSharesRegionSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesProductSlicer",
+      "target": "revenueShareGlobal",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesProductSlicer",
+      "target": "revenueShareRow",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesProductSlicer",
+      "target": "revenueSharesCompanion",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesProductSlicer",
+      "target": "revenueSharesRegionSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesRegionSlicer",
+      "target": "revenueShareGlobal",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesRegionSlicer",
+      "target": "revenueShareRow",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesRegionSlicer",
+      "target": "revenueSharesCompanion",
+      "type": "DataFilter"
+    },
+    {
+      "source": "revenueSharesRegionSlicer",
+      "target": "revenueSharesProductSlicer",
+      "type": "DataFilter"
+    }
+  ]
+}

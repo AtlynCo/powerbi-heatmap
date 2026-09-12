@@ -1,0 +1,27 @@
+table 'Line'
+
+	column 'Line'
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Line
+		sortByColumn: 'LineSort'
+
+	column 'LineSort'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: LineSort
+
+	partition 'Line' = m
+		mode: import
+		source =
+			let
+				Source = #table(type table [Line = text, LineSort = nullable number], {
+					{"Line B", 10},
+					{"Line A", 20},
+					{"Line C", 30}
+				}),
+				Typed = Table.TransformColumnTypes(Source, {{"Line", type text}, {"LineSort", Int64.Type}}, "en-US")
+			in
+				Typed

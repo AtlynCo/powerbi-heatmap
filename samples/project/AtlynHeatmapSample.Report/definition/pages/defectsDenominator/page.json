@@ -1,0 +1,70 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/1.3.0/schema.json",
+  "name": "defectsDenominator",
+  "displayName": "04 Defects - opportunities",
+  "displayOption": "FitToPage",
+  "width": 1280,
+  "height": 900,
+  "visualInteractions": [
+    {
+      "source": "defectsPerOpportunity",
+      "target": "defectsDenominatorCompanion",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsPerOpportunity",
+      "target": "defectsDenominatorDefectSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsPerOpportunity",
+      "target": "defectsDenominatorLineSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorCompanion",
+      "target": "defectsPerOpportunity",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorCompanion",
+      "target": "defectsDenominatorDefectSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorCompanion",
+      "target": "defectsDenominatorLineSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorDefectSlicer",
+      "target": "defectsPerOpportunity",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorDefectSlicer",
+      "target": "defectsDenominatorCompanion",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorDefectSlicer",
+      "target": "defectsDenominatorLineSlicer",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorLineSlicer",
+      "target": "defectsPerOpportunity",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorLineSlicer",
+      "target": "defectsDenominatorCompanion",
+      "type": "DataFilter"
+    },
+    {
+      "source": "defectsDenominatorLineSlicer",
+      "target": "defectsDenominatorDefectSlicer",
+      "type": "DataFilter"
+    }
+  ]
+}

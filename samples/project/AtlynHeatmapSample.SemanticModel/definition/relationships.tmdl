@@ -1,0 +1,27 @@
+relationship ProductRegion_Product
+	fromColumn: ProductRegion.Product
+	toColumn: Product.Product
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+
+relationship ProductRegion_Region
+	fromColumn: ProductRegion.Region
+	toColumn: Region.Region
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+
+relationship DefectLine_Defect
+	fromColumn: DefectLine.Defect
+	toColumn: Defect.Defect
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+
+relationship DefectLine_Line
+	fromColumn: DefectLine.Line
+	toColumn: Line.Line
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection

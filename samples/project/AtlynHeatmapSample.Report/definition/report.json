@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/2.0.0/schema.json",
+  "themeCollection": {},
+  "resourcePackages": [
+    {
+      "name": "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37",
+      "type": "CustomVisual",
+      "items": [
+        {
+          "name": "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37.pbiviz.json",
+          "path": "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37.pbiviz.json",
+          "type": "CustomVisualMetadata"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "defaultFilterActionIsDataFilter": true,
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized"
+  },
+  "annotations": [
+    {
+      "name": "AtlynSample",
+      "value": "Synthetic offline sample; static checks are not native Desktop validation."
+    }
+  ]
+}

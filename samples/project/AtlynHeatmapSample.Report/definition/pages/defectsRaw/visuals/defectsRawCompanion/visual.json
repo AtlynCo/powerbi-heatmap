@@ -1,0 +1,177 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "defectsRawCompanion",
+  "position": {
+    "x": 24,
+    "y": 540,
+    "width": 888,
+    "height": 248,
+    "z": 5000,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Defect"
+                    }
+                  },
+                  "Property": "Defect"
+                }
+              },
+              "queryRef": "Defect.Defect",
+              "nativeQueryRef": "Defect",
+              "active": true
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Line"
+                    }
+                  },
+                  "Property": "Line"
+                }
+              },
+              "queryRef": "Line.Line",
+              "nativeQueryRef": "Line",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DefectLine"
+                    }
+                  },
+                  "Property": "Defect Count"
+                }
+              },
+              "queryRef": "DefectLine.Defect Count",
+              "nativeQueryRef": "Defect Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DefectLine"
+                    }
+                  },
+                  "Property": "Line Inspection Opportunities"
+                }
+              },
+              "queryRef": "DefectLine.Line Inspection Opportunities",
+              "nativeQueryRef": "Line Inspection Opportunities"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DefectLine"
+                    }
+                  },
+                  "Property": "Defects Per Opportunity"
+                }
+              },
+              "queryRef": "DefectLine.Defects Per Opportunity",
+              "nativeQueryRef": "Defects Per Opportunity"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Defect"
+                  }
+                },
+                "Property": "Defect"
+              }
+            },
+            "direction": "Ascending"
+          },
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Line"
+                  }
+                },
+                "Property": "Line"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": false
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Native matrix | model value, denominator and ratio'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Native matrix | model value, denominator and ratio'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

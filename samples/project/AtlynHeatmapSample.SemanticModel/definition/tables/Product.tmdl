@@ -1,0 +1,28 @@
+table 'Product'
+
+	column 'Product'
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Product
+		sortByColumn: 'ProductSort'
+
+	column 'ProductSort'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: ProductSort
+
+	partition 'Product' = m
+		mode: import
+		source =
+			let
+				Source = #table(type table [Product = text, ProductSort = nullable number], {
+					{"Pumps", 10},
+					{"Valves", 20},
+					{"Sensors", 30},
+					{"Filters", 40}
+				}),
+				Typed = Table.TransformColumnTypes(Source, {{"Product", type text}, {"ProductSort", Int64.Type}}, "en-US")
+			in
+				Typed

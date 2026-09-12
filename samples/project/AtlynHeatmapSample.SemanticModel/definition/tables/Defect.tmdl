@@ -1,0 +1,28 @@
+table 'Defect'
+
+	column 'Defect'
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Defect
+		sortByColumn: 'DefectSort'
+
+	column 'DefectSort'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: DefectSort
+
+	partition 'Defect' = m
+		mode: import
+		source =
+			let
+				Source = #table(type table [Defect = text, DefectSort = nullable number], {
+					{"Scratch", 10},
+					{"Dent", 20},
+					{"Seal", 30},
+					{"Label", 40}
+				}),
+				Typed = Table.TransformColumnTypes(Source, {{"Defect", type text}, {"DefectSort", Int64.Type}}, "en-US")
+			in
+				Typed
