@@ -1,6 +1,6 @@
 # Local release-quality evidence
 
-This is engineering evidence for 1.0.1.0, **not Microsoft certification, native Power BI validation, or Marketplace submission**. GitHub Actions is disabled; no workflow or hosted CI result is required or used. The retained immutable release manifest identifies the exact source commit, package bytes, tooling, assets, and command logs.
+This is engineering evidence for 1.0.2.0, **not Microsoft certification, native Power BI validation, or Marketplace submission**. GitHub Actions is disabled; no workflow or hosted CI result is required or used. The retained immutable release manifest identifies the exact source commit, package bytes, tooling, assets, and command logs.
 
 ## Reproduce locally
 

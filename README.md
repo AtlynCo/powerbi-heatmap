@@ -66,8 +66,8 @@ Below 180 × 120 pixels, enlarge the visual; very large fonts can require more s
 | Item | Fixed v1 metadata |
 | --- | --- |
 | Visual GUID | `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37` |
-| `.pbiviz` version | `1.0.1.0` |
-| Private npm package | `@atlyn/heatmap` `1.0.1` |
+| `.pbiviz` version | `1.0.2.0` |
+| Private npm package | `@atlyn/heatmap` `1.0.2.0` |
 | Power BI host API contract (`apiVersion`) | `5.11.0` |
 | `powerbi-visuals-api` SDK npm package | `5.11.1` |
 | Power BI visuals tools | `7.2.1` |

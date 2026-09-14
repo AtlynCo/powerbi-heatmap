@@ -24,8 +24,8 @@ Official Microsoft Power BI certification is **owner-required**, in addition to 
 | Support URL | https://www.atlynco.com/docs/faq |
 | Private source repository | https://github.com/AtlynCo/powerbi-heatmap |
 | Visual GUID | `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37` |
-| Visual version | `1.0.1.0` |
-| Private npm package | `@atlyn/heatmap` `1.0.1` |
+| Visual version | `1.0.2.0` |
+| Private npm package | `@atlyn/heatmap` `1.0.2.0` |
 | Host API contract (`apiVersion`) | `5.11.0` |
 | `powerbi-visuals-api` SDK npm package | `5.11.1` |
 | Visuals tools / TypeScript | `7.2.1` / `5.9.3` |
@@ -70,7 +70,7 @@ The release runner audits the exact `.pbiviz` and preserves outcomes with its im
 
 | Asset | Prepared source/output | Acceptance boundary |
 | --- | --- | --- |
-| Installable package | `dist/<GUID>.1.0.1.0.pbiviz` | Exact bytes/hash in frozen manifest; never silently rebuild after freezing |
+| Installable package | `dist/<GUID>.1.0.2.0.pbiviz` | Exact bytes/hash in frozen manifest; never silently rebuild after freezing |
 | Source | Private repository, review PR, lowercase `certification` branch | Existing certification ref stays at the sealed source; parent approves any final ref movement/reviewer access and must not overwrite a submitted baseline |
 | 20px visual icon | `assets/icon.png` | Embedded exact PNG audited against package |
 | 300px listing logo | `assets/icon300.png` | Same accurate heatmap design, PNG exactly300x300; not an in-report marketing logo |

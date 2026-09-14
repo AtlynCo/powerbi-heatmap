@@ -32,6 +32,75 @@ test("missing input and wrong shape return clear errors with no fake cells", () 
     }
 });
 
+test("empty state and partial field mappings fail safely with clear errors and no fake cells", () => {
+    const rowSource: powerbi.DataViewMetadataColumn = { displayName: "RowCol", queryName: "RowCol", roles: { row: true } };
+    const colSource: powerbi.DataViewMetadataColumn = { displayName: "ColCol", queryName: "ColCol", roles: { column: true } };
+    const valSource: powerbi.DataViewMetadataColumn = { displayName: "ValCol", queryName: "ValCol", isMeasure: true, roles: { value: true } };
+    const emptyHierarchy: powerbi.DataViewHierarchy = { root: {}, levels: [] };
+
+    const partialCases: [string, powerbi.DataView | undefined][] = [
+        ["undefined dataView", undefined],
+        ["empty dataView object", {} as powerbi.DataView],
+        ["empty columns array", { metadata: { columns: [] } }],
+        ["row only", {
+            metadata: { columns: [rowSource] },
+            matrix: {
+                rows: { root: { children: [{ value: "R1" }] }, levels: [{ sources: [rowSource] }] },
+                columns: emptyHierarchy,
+                valueSources: []
+            }
+        }],
+        ["column only", {
+            metadata: { columns: [colSource] },
+            matrix: {
+                rows: emptyHierarchy,
+                columns: { root: { children: [{ value: "C1" }] }, levels: [{ sources: [colSource] }] },
+                valueSources: []
+            }
+        }],
+        ["value only", {
+            metadata: { columns: [valSource] },
+            matrix: {
+                rows: emptyHierarchy,
+                columns: emptyHierarchy,
+                valueSources: [valSource]
+            }
+        }],
+        ["row and column without value", {
+            metadata: { columns: [rowSource, colSource] },
+            matrix: {
+                rows: { root: { children: [{ value: "R1" }] }, levels: [{ sources: [rowSource] }] },
+                columns: { root: { children: [{ value: "C1" }] }, levels: [{ sources: [colSource] }] },
+                valueSources: []
+            }
+        }],
+        ["row and value without column", {
+            metadata: { columns: [rowSource, valSource] },
+            matrix: {
+                rows: { root: { children: [{ value: "R1" }] }, levels: [{ sources: [rowSource] }] },
+                columns: emptyHierarchy,
+                valueSources: [valSource]
+            }
+        }],
+        ["column and value without row", {
+            metadata: { columns: [colSource, valSource] },
+            matrix: {
+                rows: emptyHierarchy,
+                columns: { root: { children: [{ value: "C1" }] }, levels: [{ sources: [colSource] }] },
+                valueSources: [valSource]
+            }
+        }]
+    ];
+
+    for (const [name, input] of partialCases) {
+        const model = buildModel(input);
+        assert.ok(model.error, `${name}: expected model.error to be set`);
+        assert.deepEqual(model.cells, [], `${name}: expected model.cells to be empty`);
+        assert.deepEqual(model.rows, [], `${name}: expected model.rows to be empty`);
+        assert.deepEqual(model.columns, [], `${name}: expected model.columns to be empty`);
+    }
+});
+
 test("host row/column order and node identities survive without caption deduplication", () => {
     const view = matrixFixture(3, 2);
     const matrix = view.matrix!;

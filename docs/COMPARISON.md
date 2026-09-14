@@ -2,7 +2,7 @@
 
 Public documentation reviewed September 9, 2026. These are documented capability comparisons, not hands-on competitor benchmarks. Vendor claims have not been independently measured. No market-leadership or certification claim is made for Atlyn.
 
-| Author task | Native Matrix | Powerviz Heatmap | Deneb | Atlyn Heatmap 1.0.1.0 |
+| Author task | Native Matrix | Powerviz Heatmap | Deneb | Atlyn Heatmap 1.0.2.0 |
 | --- | --- | --- | --- | --- |
 | Encode a measure with color | Gradients, custom min/max/midpoint, rules, field-value colors and blank formatting [1] | 30+ palettes, accessibility-safe options, data classes/custom color fields [2] | Vega/Vega-Lite JSON specification authored in the visual [3] | Two fixed sequential/diverging palettes; global/row/column scope separated from calculation |
 | Totals and broader layouts | Conditional formatting supports totals/subtotals [1] | Row/column totals with bars, small multiples, reference lines and shapes [2] | Specification-dependent; broad declarative design flexibility [3] | Intentionally no totals, small multiples, reference lines, or freeform editor |
