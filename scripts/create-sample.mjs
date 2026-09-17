@@ -10,7 +10,8 @@ export const projectName = "AtlynHeatmapSample";
 export const reportFolder = `${projectName}.Report`;
 export const modelFolder = `${projectName}.SemanticModel`;
 export const defaultOutput = path.join(root, "dist", "submission", projectName);
-export const defaultPackage = path.join(root, "dist", "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37.1.0.2.0.pbiviz");
+export const sourceConfig = JSON.parse(readFileSync(path.join(root, "pbiviz.json"), "utf8"));
+export const defaultPackage = path.join(root, "dist", `${sourceConfig.visual.guid}.${sourceConfig.visual.version}.pbiviz`);
 export const schemaRoot = "https://developer.microsoft.com/json-schemas/fabric/";
 export const schemas = {
     report: `${schemaRoot}item/report/definition/report/2.0.0/schema.json`,
@@ -188,8 +189,8 @@ export async function buildProject(packagePath = defaultPackage) {
     };
     const spec = JSON.parse(input("samples/project/project.json"));
     const config = JSON.parse(input("pbiviz.json"));
-    assert.equal(spec.guid, "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37");
-    assert.equal(spec.version, "1.0.2.0");
+    assert.equal(spec.guid, config.visual.guid);
+    assert.equal(spec.version, config.visual.version);
     assert.equal(config.visual.guid, spec.guid, "Source visual GUID changed");
     assert.equal(config.visual.version, spec.version, "Source visual version changed");
     const bytes = readFileSync(packagePath);
