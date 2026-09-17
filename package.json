@@ -1,6 +1,6 @@
 {
   "name": "@atlyn/heatmap",
-  "version": "1.0.2.0",
+  "version": "1.0.2",
   "private": true,
   "description": "Atlyn Heatmap: a categorical analytical matrix for Power BI",
   "license": "UNLICENSED",

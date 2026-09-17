@@ -25,7 +25,7 @@ Official Microsoft Power BI certification is **owner-required**, in addition to 
 | Private source repository | https://github.com/AtlynCo/powerbi-heatmap |
 | Visual GUID | `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37` |
 | Visual version | `1.0.2.0` |
-| Private npm package | `@atlyn/heatmap` `1.0.2.0` |
+| Private npm package | `@atlyn/heatmap` `1.0.2` |
 | Host API contract (`apiVersion`) | `5.11.0` |
 | `powerbi-visuals-api` SDK npm package | `5.11.1` |
 | Visuals tools / TypeScript | `7.2.1` / `5.9.3` |
