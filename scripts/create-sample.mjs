@@ -232,7 +232,10 @@ export async function buildProject(packagePath = defaultPackage) {
     for (const dataset of spec.datasets) {
         const rows = parseCsv(input(`samples/${dataset.input}.csv`), dataset);
         const measures = parseMeasures(input(`samples/${dataset.input}.dax`), dataset.formats);
-        put(`${modelFolder}/definition/tables/${dataset.table}.tmdl`, tableTmdl(dataset.table, dataset.columns, rows, measures));
+        const factColumns = dataset.columns.filter(item => !dataset.dimensions.some(dimension => item.name === `${dimension}Sort`));
+        put(`${modelFolder}/definition/tables/${dataset.table}.tmdl`, tableTmdl(dataset.table, factColumns, rows.map(row =>
+            factColumns.map(column => row[dataset.columns.findIndex(item => item.name === column.name)])
+        ), measures));
         for (const dimension of dataset.dimensions) {
             const keyIndex = dataset.columns.findIndex(item => item.name === dimension);
             const sortIndex = dataset.columns.findIndex(item => item.name === `${dimension}Sort`);

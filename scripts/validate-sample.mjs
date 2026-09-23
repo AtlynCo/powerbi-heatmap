@@ -93,6 +93,13 @@ export async function validateSample({ output, packagePath, schemas = false }) {
             assert(!text.includes("\r"), "TMDL must have deterministic LF endings");
         }
     }
+    for (const dataset of built.datasets.values()) {
+        const tmdl = readFileSync(path.join(output, modelFolder, "definition", "tables", `${dataset.table}.tmdl`), "utf8");
+        for (const dimension of dataset.dimensions) {
+            assert(!new RegExp(`\\bcolumn '${dimension}Sort'`).test(tmdl),
+                `Fact table must not duplicate dimension sort key: ${dataset.table}.${dimension}Sort`);
+        }
+    }
     const relations = readFileSync(path.join(output, modelFolder, "definition", "relationships.tmdl"), "utf8");
     assert.equal([...relations.matchAll(/^relationship /gm)].length, 4);
     for (const dataset of built.datasets.values()) for (const dimension of dataset.dimensions) {
