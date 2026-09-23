@@ -54,7 +54,7 @@
       "displayName": "01 Revenue - raw",
       "dataset": "ProductRegion",
       "heading": "Operations by region | Synthetic revenue",
-      "intro": "Raw model currency; one GLOBAL sequential color scale. Compare both color and value across the whole loaded grid. Select cells or headers and inspect the native matrix.",
+      "intro": "Roles: Row + Column categories, Value measure; optional Denominator and Tooltips. Use the slicers, select cells/headers, and inspect the native matrix. Format/Analysis controls: color scope/palette, value mode, additive assertion, and denominator. Limits: 500 rows, 100 columns, 20,000 cells.",
       "heatmaps": [
         { "name": "revenueRawGlobal", "title": "Revenue | raw / global", "normalization": "raw", "scope": "global", "additive": false }
       ],
@@ -65,7 +65,7 @@
       "displayName": "02 Revenue - row shares",
       "dataset": "ProductRegion",
       "heading": "Row shares | Same numbers, different color scopes",
-      "intro": "Both visuals assert nonnegative ADDITIVE revenue and divide by the loaded row total. Global colors are comparable; per-row colors are NOT comparable between products. Neither setting changes the model measure.",
+      "intro": "Roles: Row + Column categories, Value measure; optional Denominator and Tooltips. Use the slicers and compare both heatmaps with the native matrix. Format/Analysis controls: color scope/palette, share mode, additive assertion, and filters. Limits: 500 rows, 100 columns, 20,000 cells. Global colors are comparable; per-row colors are NOT comparable.",
       "heatmaps": [
         { "name": "revenueShareGlobal", "title": "Row share | GLOBAL colors", "normalization": "row", "scope": "global", "additive": true },
         { "name": "revenueShareRow", "title": "Row share | PER-ROW colors", "normalization": "row", "scope": "row", "additive": true }
@@ -77,7 +77,7 @@
       "displayName": "03 Defects - counts",
       "dataset": "DefectLine",
       "heading": "Defects by line | Synthetic event counts",
-      "intro": "Raw defect counts; one GLOBAL sequential color scale. Model sort order is Scratch, Dent, Seal, Label and Line B, Line A, Line C. Colors describe loaded counts, not defect rates.",
+      "intro": "Roles: Row + Column categories, Value measure; optional Denominator and Tooltips. Use the slicers, select a cell, and inspect the native matrix. Format/Analysis controls: color scope/palette, raw mode, additive assertion, and filters. Limits: 500 rows, 100 columns, 20,000 cells. Colors describe loaded counts, not defect rates.",
       "heatmaps": [
         { "name": "defectsRawGlobal", "title": "Defect count | raw / global", "normalization": "raw", "scope": "global", "additive": false }
       ],
@@ -88,7 +88,7 @@
       "displayName": "04 Defects - opportunities",
       "dataset": "DefectLine",
       "heading": "Defects per opportunity | Explicit model denominator",
-      "intro": "Denominator is the model's Line Inspection Opportunities measure. It removes Defect filters and counts exposure once per line. This is NOT share of visible defects; the additive assertion stays OFF.",
+      "intro": "Roles: Row + Column categories, Value measure, optional Denominator and Tooltips. Use the slicers, select cells, and inspect the native matrix. Format/Analysis controls: color scope/palette, denominator mode, and filters; additive stays OFF. Limits: 500 rows, 100 columns, 20,000 cells.",
       "heatmaps": [
         { "name": "defectsPerOpportunity", "title": "Count / model opportunities | global", "normalization": "denominator", "scope": "global", "additive": false, "denominator": true }
       ],
@@ -99,7 +99,7 @@
       "displayName": "05 Interpretation and keyboard",
       "dataset": "ProductRegion",
       "heading": "Interpretation and keyboard | Model versus visible totals",
-      "intro": "Use Tab to reach the heatmap, then arrows/Home/End to move. Enter/Space selects; Ctrl/Cmd adds selection; Escape clears; Shift+F10 opens the context menu. Verify actual host keyboard and accessibility behavior before release.",
+      "intro": "Roles: Row + Column categories, Value measure; optional Denominator and Tooltips. Use the slicers and native matrix, then Tab to the heatmap. Format/Analysis controls: color scope/palette, value mode, and filters. Limits: 500 rows, 100 columns, 20,000 cells. Arrows/Home/End move; Enter/Space selects; Ctrl/Cmd adds; Escape clears; Shift+F10 opens context menu.",
       "heatmaps": [
         { "name": "revenueModelDenominator", "title": "Revenue / model product total | global", "normalization": "denominator", "scope": "global", "additive": false, "denominator": true }
       ],

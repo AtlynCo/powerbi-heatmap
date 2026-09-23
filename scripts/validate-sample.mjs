@@ -112,6 +112,11 @@ export async function validateSample({ output, packagePath, schemas = false }) {
         const visuals = onDisk.filter(name => name.startsWith(`${prefix}visuals/`) && name.endsWith("/visual.json")).map(read);
         const names = visuals.map(item => item.name);
         assert.equal(new Set(names).size, names.length);
+        const intro = visuals.find(item => item.name === `${pageName}Intro`);
+        assert(intro?.visual?.visualType === "textbox", `Page is missing visible usage hints: ${pageName}`);
+        const introText = intro.visual.objects?.general?.[0]?.properties?.paragraphs?.[0]?.textRuns?.[0]?.value ?? "";
+        assert(/Roles:/.test(introText) && /Format\/Analysis controls:/.test(introText) && /Limits:/.test(introText),
+            `Visible usage hints are incomplete: ${pageName}`);
         assert(visuals.some(item => item.visual.visualType === built.spec.guid), `Page has no bound heatmap: ${pageName}`);
         assert(visuals.some(item => item.visual.visualType === "pivotTable"), `Page has no native comparison: ${pageName}`);
         for (const interaction of page.visualInteractions) {

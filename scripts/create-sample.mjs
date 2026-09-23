@@ -136,7 +136,7 @@ function buildPage(page, dataset, guid) {
     const split = page.heatmaps.length === 2;
     const visuals = [
         textVisual(`${page.name}Heading`, page.heading, position(24, 16, 1232, 48, 0), 22, true),
-        textVisual(`${page.name}Intro`, page.intro, position(24, 70, 1232, 68, 1))
+        textVisual(`${page.name}Intro`, page.intro, position(24, 70, 1232, 68, 1), 10)
     ];
     page.heatmaps.forEach((heatmap, i) => {
         const queryState = {
