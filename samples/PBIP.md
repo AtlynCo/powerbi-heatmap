@@ -16,7 +16,7 @@ node scripts\validate-sample.mjs
 Default input:
 
 ```text
-dist\atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37.1.0.2.0.pbiviz
+dist\atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37.1.0.3.0.pbiviz
 ```
 
 Default output:
@@ -52,11 +52,11 @@ dist\submission\AtlynHeatmapSample\
 An alternative **child of the repository's ignored `dist` directory** can be supplied:
 
 ```powershell
-node scripts\create-sample.mjs --package dist\atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37.1.0.2.0.pbiviz --output dist\sample-review
+node scripts\create-sample.mjs --package dist\atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37.1.0.3.0.pbiviz --output dist\sample-review
 node scripts\validate-sample.mjs --output dist\sample-review
 ```
 
-A positional output argument is also accepted. The builder reads the package at runtime; it never rebuilds it, signs it, downloads it, mutates its payload, or substitutes another version. It verifies the source configuration, package manifest, and visual payload all have the stable GUID and `1.0.2.0`. It resolves the payload through `metadata.pbivizjson.resourceId` and the corresponding `sourceType: 5` resource, not by taking an arbitrary JSON file.
+A positional output argument is also accepted. The builder reads the package at runtime; it never rebuilds it, signs it, downloads it, mutates its payload, or substitutes another version. It verifies the source configuration, package manifest, and visual payload all have the stable GUID and `1.0.3.0`. It resolves the payload through `metadata.pbivizjson.resourceId` and the corresponding `sourceType: 5` resource, not by taking an arbitrary JSON file.
 
 Every non-directory ZIP entry is extracted unchanged below `Report\CustomVisuals\<GUID>`. The report registers a `CustomVisual` resource package whose item type is `CustomVisualMetadata`, with the payload **basename** as its name/path. That basename resolves inside the extracted package's `resources` folder. This matches an actual public PBIR export, not a guessed `.pbiviz` download URL. There is no `publicCustomVisuals` or organization-store dependency.
 

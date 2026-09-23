@@ -10,7 +10,7 @@ The coordinator reports native Desktop open/refresh, cross-filtering, Save PBIX 
 
 ## Artifact and automated evidence
 
-- [ ] Confirm GUID `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37`, `.pbiviz` version `1.0.2.0`, private package `@atlyn/heatmap` `1.0.2`, host API contract (`apiVersion`) `5.11.0`, `powerbi-visuals-api` SDK npm package `5.11.1`, visuals tools `7.2.1`, TypeScript `5.9.3`, and Node `>=22`. Official tools normalize the supported host contract to `5.11.0`; verify the manifest and package audit use that value rather than the npm package version.
+- [ ] Confirm GUID `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37`, `.pbiviz` version `1.0.3.0`, private package `@atlyn/heatmap` `1.0.2`, host API contract (`apiVersion`) `5.11.0`, `powerbi-visuals-api` SDK npm package `5.11.1`, visuals tools `7.2.1`, TypeScript `5.9.3`, and Node `>=22`. Official tools normalize the supported host contract to `5.11.0`; verify the manifest and package audit use that value rather than the npm package version.
 - [ ] Record results of `typecheck`, `lint`, `test`, `package`, `audit:package`, and `test:browser` for the candidate. Check what `validate` actually runs rather than assuming coverage.
 - [ ] Run/record full `npm audit` and `audit:dependencies` separately; assess production advisories and packaged runtime exposure. Confirm the development-only `qs` `6.16.0` and `sockjs` → `uuid` `11.1.1` mitigations in the lockfile/dependency graph. Do not equate a production-only audit with auditing every development tool; record dated vulnerability counts in `VALIDATION.md`.
 - [ ] Generate/check `THIRD_PARTY_NOTICES.md`, including the MIT scaffold attribution and applicable bundled-component licenses. Confirm original Atlyn work remains all rights reserved.

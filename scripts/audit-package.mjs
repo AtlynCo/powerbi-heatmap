@@ -16,7 +16,7 @@ assert.equal(resource.visual.displayName, "Atlyn Heatmap");
 assert.equal(resource.apiVersion, "5.11.0");
 assert.equal(resource.author.name, "Atlyn");
 assert.equal(resource.author.email, "atlyn.help@gmail.com");
-assert.equal(resource.visual.supportUrl, "https://www.atlynco.com/docs/faq");
+assert.equal(resource.visual.supportUrl, config.visual.supportUrl);
 assert.deepEqual(resource.capabilities, capabilities);
 assert.deepEqual(resource.capabilities.privileges, []);
 assert.deepEqual(resource.stringResources["en-US"], strings);

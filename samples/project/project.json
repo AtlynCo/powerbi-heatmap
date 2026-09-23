@@ -1,6 +1,6 @@
 {
   "guid": "atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37",
-  "version": "1.0.2.0",
+  "version": "1.0.3.0",
   "datasets": [
     {
       "table": "ProductRegion",

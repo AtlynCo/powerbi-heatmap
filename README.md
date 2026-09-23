@@ -66,7 +66,7 @@ Below 180 × 120 pixels, enlarge the visual; very large fonts can require more s
 | Item | Fixed v1 metadata |
 | --- | --- |
 | Visual GUID | `atlynHeatmapB5AA568F60B24834A73E7A7E279D8B37` |
-| `.pbiviz` version | `1.0.2.0` |
+| `.pbiviz` version | `1.0.3.0` |
 | Private npm package | `@atlyn/heatmap` `1.0.2` |
 | Power BI host API contract (`apiVersion`) | `5.11.0` |
 | `powerbi-visuals-api` SDK npm package | `5.11.1` |
@@ -113,7 +113,7 @@ One visual; empty privileges; no telemetry, backend, license service, runtime ne
 
 ### Commercial acquisition and shared viewing
 
-Owner-approved model (September 10, 2026): **storefront subscriptions, ungated visuals**. Commercial acquisition uses existing Atlyn storefront subscriptions. The visual remains fully ungated in Power BI, with free shared viewing and no viewer subscription check. It does not verify author purchases or enforce author entitlements; report access still follows Power BI and tenant policies.
+Owner-approved model (September 10, 2026): **storefront subscriptions, ungated visuals**. Author use requires an active paid or trial Atlyn all-access subscription; viewers need no separate Atlyn subscription. The visual remains fully ungated in Power BI, with free shared viewing and no runtime subscription check; report access still follows Power BI and tenant policies.
 
 The existing offline renderer is the intended runtime, not an interim build awaiting paid integration. Do not add license checks, signers/keys, AAD/API integration, feature gates, or runtime requests for this commercial model. The owner requires official Microsoft Power BI certification in addition to general Marketplace review. During authorized submission, the coordinator must select **Request Power BI certification**. Microsoft's actual grant is pending; no certified badge or approval is claimed, and rendering remains ungated.
 
@@ -121,4 +121,4 @@ Original Atlyn work is **all rights reserved**; see [LICENSE](LICENSE). Third-pa
 
 The private package's existing license identifier is `UNLICENSED`; `LICENSE` makes no additional license grant and does not offer the original source/docs/assets under an open-source license. Ungated rendering and free shared viewing do not relicense that work. This documentation does not replace existing storefront/customer terms or invent prices, trials, distribution rights, or a new EULA.
 
-Author: **Atlyn**, [atlyn.help@gmail.com](mailto:atlyn.help@gmail.com). Support: <https://www.atlynco.com/docs/faq>. Private source: <https://github.com/AtlynCo/powerbi-heatmap>. These contact/repository details are product metadata, not evidence of support responsiveness. See [submission preparation](docs/SUBMISSION.md); this repository does not claim publication, a Partner Center submission, a public release, or Microsoft certification.
+Author: **Atlyn**, [atlyn.help@gmail.com](mailto:atlyn.help@gmail.com). Support: <https://atlynco.github.io/atlyn-powerbi-support/docs/faq/>. Private source: <https://github.com/AtlynCo/powerbi-heatmap>. These contact/repository details are product metadata, not evidence of support responsiveness. See [submission preparation](docs/SUBMISSION.md); this repository does not claim publication, a Partner Center submission, a public release, or Microsoft certification.
