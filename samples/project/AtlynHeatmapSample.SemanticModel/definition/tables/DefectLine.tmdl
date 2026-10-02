@@ -28,23 +28,11 @@ table 'DefectLine'
 		summarizeBy: none
 		sourceColumn: Defect
 
-	column 'DefectSort'
-		dataType: int64
-		isHidden
-		summarizeBy: none
-		sourceColumn: DefectSort
-
 	column 'Line'
 		dataType: string
 		isHidden
 		summarizeBy: none
 		sourceColumn: Line
-
-	column 'LineSort'
-		dataType: int64
-		isHidden
-		summarizeBy: none
-		sourceColumn: LineSort
 
 	column 'Defects'
 		dataType: int64
@@ -62,19 +50,19 @@ table 'DefectLine'
 		mode: import
 		source =
 			let
-				Source = #table(type table [Defect = text, DefectSort = nullable number, Line = text, LineSort = nullable number, Defects = nullable number, Opportunities = nullable number], {
-					{"Scratch", 10, "Line B", 10, 0, 200},
-					{"Scratch", 10, "Line A", 20, 8, 160},
-					{"Scratch", 10, "Line C", 30, 3, 100},
-					{"Dent", 20, "Line B", 10, 6, 200},
-					{"Dent", 20, "Line A", 20, null, 160},
-					{"Dent", 20, "Line C", 30, 1, 100},
-					{"Seal", 30, "Line B", 10, 4, 200},
-					{"Seal", 30, "Line A", 20, 2, 160},
-					{"Seal", 30, "Line C", 30, 0, 100},
-					{"Label", 40, "Line B", 10, 2, 200},
-					{"Label", 40, "Line A", 20, 4, 160}
+				Source = #table(type table [Defect = text, Line = text, Defects = nullable number, Opportunities = nullable number], {
+					{"Scratch", "Line B", 0, 200},
+					{"Scratch", "Line A", 8, 160},
+					{"Scratch", "Line C", 3, 100},
+					{"Dent", "Line B", 6, 200},
+					{"Dent", "Line A", null, 160},
+					{"Dent", "Line C", 1, 100},
+					{"Seal", "Line B", 4, 200},
+					{"Seal", "Line A", 2, 160},
+					{"Seal", "Line C", 0, 100},
+					{"Label", "Line B", 2, 200},
+					{"Label", "Line A", 4, 160}
 				}),
-				Typed = Table.TransformColumnTypes(Source, {{"Defect", type text}, {"DefectSort", Int64.Type}, {"Line", type text}, {"LineSort", Int64.Type}, {"Defects", Int64.Type}, {"Opportunities", Int64.Type}}, "en-US")
+				Typed = Table.TransformColumnTypes(Source, {{"Defect", type text}, {"Line", type text}, {"Defects", Int64.Type}, {"Opportunities", Int64.Type}}, "en-US")
 			in
 				Typed

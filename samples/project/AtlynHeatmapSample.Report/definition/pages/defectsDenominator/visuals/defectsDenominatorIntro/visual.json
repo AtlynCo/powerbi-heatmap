@@ -19,9 +19,9 @@
               {
                 "textRuns": [
                   {
-                    "value": "Denominator is the model's Line Inspection Opportunities measure. It removes Defect filters and counts exposure once per line. This is NOT share of visible defects; the additive assertion stays OFF.",
+                    "value": "Roles: Row + Column categories, Value measure, optional Denominator and Tooltips. Use the slicers, select cells, and inspect the native matrix. Format/Analysis controls: color scope/palette, denominator mode, and filters; additive stays OFF. Limits: 500 rows, 100 columns, 20,000 cells.",
                     "textStyle": {
-                      "fontSize": "12pt"
+                      "fontSize": "10pt"
                     }
                   }
                 ]
