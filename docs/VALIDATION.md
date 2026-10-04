@@ -18,7 +18,7 @@ The sample stage authors five bound pages/six heatmaps with native matrices and 
 | Official SDK package/build with certification audit | Passed; no external requests found |
 | Package metadata, capabilities, icons, resources, notices and static audit | Passed |
 | Actual packaged Chromium regressions and screenshots | 22 passed |
-| Full / production dependency audits | Zero reported vulnerabilities in both |
+| Full / production dependency audits | Production audit: 0 vulnerabilities; Full dev audit: 6 high vulnerabilities via dev-dependency SDK powerbi-visuals-tools 7.2.1 -> braces <=3.0.3 (GHSA-vfj7-8cjw-p6xm, unpatched upstream) |
 | Bound offline sample generation / validation | 61 files, five pages, six heatmaps; 47 JSON documents / 13 pinned schemas passed |
 | Native Power BI / PBIX / Marketplace certification | Not performed by this local runner; subsequent coordinator-reported status is recorded below |
 
@@ -79,7 +79,7 @@ The archived 1.0.0.0 package was also measured locally with the same harness: 20
 
 Official tools 7.2.1 / API npm package 5.11.1 (host API 5.11.0) were current when checked. `--all-locales` is the supported workaround for the formattingutils locale-pruning ESM incompatibility. There are no dependency source patches. The wrapper generates file-only untrusted development certificates in isolated ignored tool-home storage and removes their exact files; it does not install trust, services, or background infrastructure.
 
-Audit checks cover archive metadata, frozen GUID/version, icon, capabilities/empty privileges, English UI resources, embedded full third-party notices, syntax/forbidden runtime patterns, and package hash. Official audit checks external requests; browser request observers add dynamic evidence for tested paths. These are bounded checks, not a proof about every possible host input. Full and production dependency audits are separate and time-sensitive. The SDK's optional Landing Page/Total-Subtotal recommendations are disclosed; v1 has binding guidance and intentionally no displayed totals.
+Audit checks cover archive metadata, frozen GUID/version, icon, capabilities/empty privileges, English UI resources, embedded full third-party notices, syntax/forbidden runtime patterns, and package hash. Official audit checks external requests; browser request observers add dynamic evidence for tested paths. These are bounded checks, not a proof about every possible host input. Full and production dependency audits are separate and time-sensitive: production audit (`npm audit --omit=dev`) reports zero vulnerabilities, while full development audit is currently affected by 6 high findings from upstream unpatched `braces <=3.0.3` (GHSA-vfj7-8cjw-p6xm) in `powerbi-visuals-tools 7.2.1`. The SDK's optional Landing Page/Total-Subtotal recommendations are disclosed; v1 has binding guidance and intentionally no displayed totals.
 
 ## Coordinator-reported native status: September 10, 2026
 
