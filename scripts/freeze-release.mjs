@@ -28,7 +28,7 @@ function collect(directory) {
 collect("dist/submission");
 collect("dist/evidence");
 collect("test-results");
-files.push(fileURLToPath(packagePath), "dist/benchmark.json", "dist/benchmark-baseline.json", "assets/icon.png", "assets/icon300.png");
+files.push(fileURLToPath(packagePath), "dist/benchmark.json", ...(existsSync("dist/benchmark-baseline.json") ? ["dist/benchmark-baseline.json"] : []), "assets/icon.png", "assets/icon300.png");
 const assets = [];
 mkdirSync(destination, { recursive: true });
 for (const file of files.sort()) {
