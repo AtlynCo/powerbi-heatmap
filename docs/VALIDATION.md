@@ -22,6 +22,51 @@ The sample stage authors five bound pages/six heatmaps with native matrices and 
 | Bound offline sample generation / validation | 61 files, five pages, six heatmaps; 47 JSON documents / 13 pinned schemas passed |
 | Native Power BI / PBIX / Marketplace certification | Not performed by this local runner; subsequent coordinator-reported status is recorded below |
 
+### Compatible dependency remediation: November 4, 2026
+
+The earlier November 4 verification ran successfully; it was not an unexecuted
+request. Its original package and evidence were retained before this rebuild.
+The remediation uses locally installed Node **22.23.2** / npm **10.9.8**, within
+the documented Node >=22 baseline, without changing the machine-wide Node
+selection. Compatible transitive updates were resolved from cached metadata.
+The existing `qs` override advances from 6.16.0 to 6.16.2; no new override or
+out-of-range minimatch resolution was introduced.
+
+The obsolete postinstall localization-loader patch was removed. A clean
+`npm ci --offline --no-audit --no-fund` and official `--all-locales` packaging
+passed with the original, unpatched dependency loader. Typecheck, both lint
+commands, 63 unit tests, package audit, 22 packaged-browser tests, and generated
+sample/reference/schema checks passed. Notices regenerated without changes.
+The five-page sample contains 61 files, six heatmaps, and 47 schema-validated
+documents. These are local/mock-host checks, not native Power BI validation.
+
+The final raw package is 133,049 bytes, version **1.0.3.0**, SHA-256
+`c2c844297b6551332b099d379658b0648d7ba1be2574af8b5d2a3ea86ef39706`.
+Its source is commit `96a1376984e4d7beb0899c7f14107c0658cf40f0` plus the
+uncommitted remediation diff; do not identify it as a clean default-branch build.
+The latest benchmark measured 2,000-cell p95 render/resize at **124.2/133.9 ms**
+and 20,000-cell p95 render/resize at **1,641.3/1,456.1 ms**. All existing p95
+objectives passed in this run. Earlier misses remain in the retained evidence;
+shared-machine measurements are not native-host guarantees.
+
+No fresh registry audit was attempted during the shared endpoint cooldown.
+The coordinator supplied HTTP 429 evidence dated **22:33:29 UTC**, with
+`Retry-After: 913`; the endpoint must not be retried before **22:48:42 UTC**.
+The earlier local 429 response independently recorded `Retry-After: 913` at
+21:12:25 UTC. Compatible updates move the recorded high/critical dependency
+versions outside their earlier advisory ranges, but an offline comparison is
+not a fresh audit. A remaining recorded minimatch advisory affects 10.2.6;
+upstream TypeScript ESLint packages request `^10.2.2`, while the recorded fix
+requires 11.0.1 or later. An out-of-range override or breaking toolchain change
+requires separate review and was **not applied**. Fresh full/production audits,
+that review, exact-candidate native validation, and Microsoft certification
+remain release gates.
+
+Ignored local logs and comparison reports are under
+`dist\evidence\dependency-remediation-20261104`; the separately generated
+matching PBIP source is under `dist\remediation-sample\AtlynHeatmapSample`.
+No native import, upload, publication, deployment, or PR was performed.
+
 Run performance separately, without builds or other stress work in this checkout:
 
 ```powershell
