@@ -105,7 +105,7 @@ The SDK resolves development-certificate files even during packaging. The wrappe
 
 `npm run resources` generates `stringResources\en-US\resources.resjson` from canonical `src\strings.json`; the start/build/package pre-hooks run it. Edit the canonical strings, not the generated resource. Retaining SDK locales does not claim translated Atlyn UI.
 
-Development-dependency mitigations pin `qs` to `6.16.0` and scope `uuid` `11.1.1` to `sockjs`. Record current full `npm audit` and production-only audit results in [VALIDATION.md](docs/VALIDATION.md); an override or a past clean audit is not a future security guarantee.
+Development-dependency mitigations pin `qs` to `6.16.2` and scope `uuid` `11.1.1` to `sockjs`. Record current full `npm audit` and production-only audit results in [VALIDATION.md](docs/VALIDATION.md); an override or a past clean audit is not a future security guarantee.
 
 ## Scope, privacy, and ownership
 

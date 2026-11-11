@@ -29,11 +29,13 @@
     "audit:package": "node scripts/audit-package.mjs",
     "audit:dependencies": "npm audit --omit=dev",
     "notices": "node scripts/notices.mjs",
-    "validate": "npm run typecheck && npm run lint && npm test && npm run package && npm run audit:package && npm run test:browser",
-    "postinstall": "node scripts/patch-loader.mjs"
+    "validate": "npm run typecheck && npm run lint && npm test && npm run package && npm run audit:package && npm run test:browser"
   },
   "overrides": {
-    "qs": "6.16.0",
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "11.0.1"
+    },
+    "qs": "6.16.2",
     "sockjs": {
       "uuid": "11.1.1"
     }
